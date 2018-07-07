@@ -74,7 +74,6 @@ class Main:
         Recursively process the handlebars templates for the given project.
         """
         for file_name in os.listdir(full_folder_path):
-            print(f"processing: {file_name}")
             file: ParsedFile = parse_file_name(file_name, self.project_parameters)
 
             full_local_path = os.path.join(current_path, file.name)
@@ -123,7 +122,6 @@ class Main:
             with open(full_file_path, "r", encoding='utf8') as template:
                 template_content = template.read()
 
-            print(f"Project parameters: {self.project_parameters}")
             template = pybars.Compiler().compile(template_content)
             content = template(self.project_parameters)
 
@@ -186,12 +184,13 @@ class Main:
             del sys.argv[0]
 
         # we iterate the rest of the parameters, and augument the projectParameters
-        for it in sys.argv:
-            m = PARAM_RE.match(it)
+        for i in range(len(sys.argv)):
+            m = PARAM_RE.match(sys.argv[i])
             param_name = m.group(1)
             param_value = m.group(3) if m.group(3) else True
 
             self.project_parameters[param_name] = param_value
+            self.project_parameters[f"arg{i}"] = sys.argv[i]
 
         self.project_name = self.project_parameters["NAME"]
 
