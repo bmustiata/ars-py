@@ -14,20 +14,21 @@ packages = find_packages()
 
 setup(
     name='arst',
-    version='1.0.1',
+    version='1.0.2',
     description='Poor man\'s yo generator.',
-    long_description = readme,
+    long_description=readme,
     author='Bogdan Mustiata',
     author_email='bogdan.mustiata@gmail.com',
     license='BSD',
-    entry_points = {
+    entry_points={
         "console_scripts": [
             "ars = arst.launcher:launch",
             "arst = arst.launcher:launch"
         ]
     },
-	install_requires=install_requires,
-	packages=packages,
+    install_requires=install_requires,
+    packages=packages,
     package_data={
         '': ['*.txt', '*.rst']
-    })
+    }
+)
