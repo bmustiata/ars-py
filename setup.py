@@ -14,7 +14,7 @@ packages = find_packages()
 
 setup(
     name='arst',
-    version='1.0.0',
+    version='1.0.1',
     description='Poor man\'s yo generator.',
     long_description = readme,
     author='Bogdan Mustiata',
@@ -22,8 +22,12 @@ setup(
     license='BSD',
     entry_points = {
         "console_scripts": [
-            "thriftgen = arst.launcher:launch"
+            "ars = arst.launcher:launch",
+            "arst = arst.launcher:launch"
         ]
     },
 	install_requires=install_requires,
-	packages=packages)
+	packages=packages,
+    package_data={
+        '': ['*.txt', '*.rst']
+    })
