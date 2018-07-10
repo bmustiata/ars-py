@@ -24,7 +24,7 @@ class ProjectDefinition(object):
         self.generate_ars = generate_ars
 
     def file_resolver(self) -> FileResolver:
-        return FileResolver(projects_folder=self.projects_folder,
+        return FileResolver(root_projects_folder=self.projects_folder,
                             search_path=self.search_path)
 
 

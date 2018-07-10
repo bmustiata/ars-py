@@ -15,6 +15,7 @@ from .file_resolver import FileResolver
 from .project_reader import ProjectDefinition, read_project_definition
 from .color_functions import cyan, red, yellow
 from .command_push import push_files_to_template
+from .command_tree import display_project_tree
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -186,6 +187,10 @@ def run_mainapp():
 
     if args.template == "push":
         push_files_to_template(ARS_PROJECTS_FOLDER, args)
+        sys.exit(0)
+
+    if args.template == "tree":
+        display_project_tree(ARS_PROJECTS_FOLDER, args)
         sys.exit(0)
 
     if os.path.isfile(".ars"):
