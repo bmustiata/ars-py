@@ -8,7 +8,7 @@ packages = find_packages()
 
 setup(
     name='arst',
-    version='1.0.4',
+    version='1.0.5',
     description='Poor man\'s yo generator.',
     long_description=readme,
     author='Bogdan Mustiata',

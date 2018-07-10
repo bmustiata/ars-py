@@ -9,6 +9,7 @@ import subprocess
 import re
 from typing import Dict, Optional
 import argparse
+from textwrap import dedent
 
 from .program_arguments import ProgramArguments
 from .file_resolver import FileResolver
@@ -178,12 +179,24 @@ def run_mainapp():
 
     parser = argparse.ArgumentParser(description="Poor man's yo for quick project generation.")
     parser.add_argument("-n", "--noars", default=False, action="store_true", help="Don't generate the .ars file.")
+    parser.add_argument("-v", "--version", default=False, action="store_true", help="Show the project version.")
     parser.add_argument("template", help="The template/command to generate/run.", nargs="?")
     parser.add_argument("parameter", help="Generation parameters.", nargs='*')
 
     args: ProgramArguments = parser.parse_args()
 
     loaded_project_parameters: Optional[Dict[str, str]] = None
+
+    if args.version:
+        print(cyan(dedent("""\
+                                    _     _
+          __ _ _ __ ___  ___  _ __ (_)___| |_
+         / _` | '__/ __|/ _ \| '_ \| / __| __|
+        | (_| | |  \__ \ (_) | | | | \__ \ |_
+         \__,_|_|  |___/\___/|_| |_|_|___/\__|
+                               version: 1.0.5
+        """), bold=True))
+        sys.exit(0)
 
     if args.template == "push":
         push_files_to_template(ARS_PROJECTS_FOLDER, args)
