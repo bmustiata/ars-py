@@ -10,10 +10,11 @@ import re
 from typing import Dict, Optional
 import argparse
 
+from .program_arguments import ProgramArguments
 from .file_resolver import FileResolver
 from .project_reader import ProjectDefinition, read_project_definition
 from .color_functions import cyan, red, yellow
-
+from .push import push_files_to_template
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -179,9 +180,13 @@ def run_mainapp():
     parser.add_argument("template", help="The template/command to generate/run.", nargs="?")
     parser.add_argument("parameter", help="Generation parameters.", nargs='*')
 
-    args = parser.parse_args()
+    args: ProgramArguments = parser.parse_args()
 
     loaded_project_parameters: Optional[Dict[str, str]] = None
+
+    if args.template == "push":
+        push_files_to_template(ARS_PROJECTS_FOLDER, args)
+        sys.exit(0)
 
     if os.path.isfile(".ars"):
         with open(".ars", "r", encoding='utf8') as f:
