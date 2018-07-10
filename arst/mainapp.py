@@ -14,7 +14,7 @@ from .program_arguments import ProgramArguments
 from .file_resolver import FileResolver
 from .project_reader import ProjectDefinition, read_project_definition
 from .color_functions import cyan, red, yellow
-from .push import push_files_to_template
+from .command_push import push_files_to_template
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
