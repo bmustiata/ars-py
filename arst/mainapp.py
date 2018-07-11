@@ -19,6 +19,7 @@ from .command_push import push_files_to_template
 from .command_tree import display_project_tree
 from .command_ls import list_project_folder
 from .command_help import show_project_help
+from .command_pwd import display_project_location
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -214,6 +215,10 @@ def run_mainapp():
 
     if args.template == "help":
         show_project_help(ARS_PROJECTS_FOLDER, args)
+        sys.exit(0)
+
+    if args.template == "pwd":
+        display_project_location(ARS_PROJECTS_FOLDER, args)
         sys.exit(0)
 
     if os.path.isfile(".ars"):
