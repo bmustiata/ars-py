@@ -5,7 +5,8 @@ import os.path
 import yaml
 import pybars
 
-from .color_functions import red
+from termcolor_util import red
+
 from .file_resolver import FileResolver
 
 

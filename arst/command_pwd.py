@@ -1,8 +1,8 @@
 import sys
 import os.path
+from termcolor_util import red
 
 from .program_arguments import ProgramArguments
-from .color_functions import red
 
 
 def display_project_location(projects_folder: str,

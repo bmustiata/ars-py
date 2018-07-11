@@ -1,7 +1,8 @@
 import sys
 
+from termcolor_util import red, green, blue, gray
+
 from .program_arguments import ProgramArguments
-from .color_functions import red, green, blue, gray
 from .project_reader import read_project_definition
 from .file_resolver import FileResolver
 

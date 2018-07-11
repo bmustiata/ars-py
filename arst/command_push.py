@@ -3,8 +3,9 @@ import shutil
 import os.path
 import pathlib
 
+from termcolor_util import red, yellow
+
 from .program_arguments import ProgramArguments
-from .color_functions import red, yellow
 
 
 def push_files_to_template(projects_folder: str,

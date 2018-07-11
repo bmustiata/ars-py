@@ -10,11 +10,11 @@ import re
 from typing import Dict, Optional
 import argparse
 from textwrap import dedent
+from termcolor_util import cyan, red, yellow
 
 from .program_arguments import ProgramArguments
 from .file_resolver import FileResolver
 from .project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
-from .color_functions import cyan, red, yellow
 
 from .command_push import push_files_to_template
 from .command_tree import display_project_tree

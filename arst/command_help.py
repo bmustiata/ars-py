@@ -1,7 +1,8 @@
 import sys
 
+from termcolor_util import red
+
 from .program_arguments import ProgramArguments
-from .color_functions import red
 from .project_reader import read_project_definition
 
 
