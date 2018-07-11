@@ -13,13 +13,15 @@ from textwrap import dedent
 
 from .program_arguments import ProgramArguments
 from .file_resolver import FileResolver
-from .project_reader import ProjectDefinition, read_project_definition
+from .project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
 from .color_functions import cyan, red, yellow
+
 from .command_push import push_files_to_template
 from .command_tree import display_project_tree
 from .command_ls import list_project_folder
 from .command_help import show_project_help
 from .command_pwd import display_project_location
+from .command_edit import edit_file_from_project
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -31,43 +33,6 @@ ARS_DIFF_TOOL: str = os.environ["ARS_DIFF_TOOL"]\
 
 
 PARAM_RE = re.compile("^(.*?)(=(.*))?$")
-
-
-class ParsedFile(object):
-    name: str
-    original_name: str
-    keep_existing: bool
-    hbs_template: bool
-
-    def __init__(self, original_name: str) -> None:
-        self.name = original_name
-        self.original_name = original_name
-        self.keep_existing = False
-        self.hbs_template = False
-
-
-def parse_file_name(file_name: str, project_parameters: Dict[str, str]) -> ParsedFile:
-    """
-    parseFileName - Parse the fie name
-    :param file_name: string with filename
-    :param project_parameters: the project parameters if they are used in the file name.
-    :return: result dict
-    """
-    result = ParsedFile(file_name)
-
-    name: str = file_name
-
-    if name.endswith('.KEEP'):
-        result.keep_existing = True
-        name = name[0: -len(".KEEP")]
-
-    if name.endswith(".hbs"):
-        result.hbs_template = True
-        name = name[0: -len(".hbs")]
-
-    result.name = pybars.Compiler().compile(name)(project_parameters)
-
-    return result
 
 
 def execute_diff(file1: str, file2: str) -> None:
@@ -197,7 +162,7 @@ def run_mainapp():
          / _` | '__/ __|/ _ \| '_ \| / __| __|
         | (_| | |  \__ \ (_) | | | | \__ \ |_
          \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.7
+                               version: 1.0.9
         """), bold=True))
         sys.exit(0)
 
@@ -228,6 +193,10 @@ def run_mainapp():
                   cyan("'.ars'", bold=True),
                   cyan("file settings:"),
                   cyan(loaded_project_parameters, bold=True))
+
+    if args.template == "edit":
+        edit_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
+        sys.exit(0)
 
     if not args.template and not loaded_project_parameters:
         print(red("You need to pass a project name to generate."))

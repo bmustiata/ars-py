@@ -1,11 +1,25 @@
-from typing import List
+from typing import List, Dict
 import mdvl
 import sys
 import os.path
 import yaml
+import pybars
 
 from .color_functions import red
 from .file_resolver import FileResolver
+
+
+class ParsedFile(object):
+    name: str
+    original_name: str
+    keep_existing: bool
+    hbs_template: bool
+
+    def __init__(self, original_name: str) -> None:
+        self.name = original_name
+        self.original_name = original_name
+        self.keep_existing = False
+        self.hbs_template = False
 
 
 class ProjectDefinition(object):
@@ -26,6 +40,30 @@ class ProjectDefinition(object):
     def file_resolver(self) -> FileResolver:
         return FileResolver(root_projects_folder=self.projects_folder,
                             search_path=self.search_path)
+
+
+def parse_file_name(file_name: str, project_parameters: Dict[str, str]) -> ParsedFile:
+    """
+    parseFileName - Parse the fie name
+    :param file_name: string with filename
+    :param project_parameters: the project parameters if they are used in the file name.
+    :return: result dict
+    """
+    result = ParsedFile(file_name)
+
+    name: str = file_name
+
+    if name.endswith('.KEEP'):
+        result.keep_existing = True
+        name = name[0: -len(".KEEP")]
+
+    if name.endswith(".hbs"):
+        result.hbs_template = True
+        name = name[0: -len(".hbs")]
+
+    result.name = pybars.Compiler().compile(name)(project_parameters)
+
+    return result
 
 
 def read_project_definition(projects_folder: str,
