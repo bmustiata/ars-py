@@ -35,7 +35,13 @@ def edit_file_from_project(projects_folder: str,
                            loaded_project_parameters: Optional[Dict[str, str]]) -> None:
     assert loaded_project_parameters
 
-    project_name = loaded_project_parameters["NAME"]
+    if len(args.parameter) >= 2:
+        project_name = args.parameter[0]
+        file_to_edit = args.parameter[1]
+    else:
+        project_name = loaded_project_parameters["NAME"]
+        file_to_edit = args.parameter[0]
+
     project_definition: ProjectDefinition = read_project_definition(projects_folder, project_name)
     path_mappings: Dict[str, str] = dict()
     process_folder(".", project_definition.file_resolver(), loaded_project_parameters, path_mappings)
@@ -45,4 +51,4 @@ def edit_file_from_project(projects_folder: str,
     else:
         editor = "nvim"
 
-    subprocess.call([editor, path_mappings[args.parameter[0]]])
+    subprocess.call([editor, path_mappings[file_to_edit]])
