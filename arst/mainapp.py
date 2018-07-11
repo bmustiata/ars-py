@@ -1,5 +1,5 @@
 import filecmp
-import json
+import yaml
 import os
 import shutil
 import sys
@@ -18,6 +18,7 @@ from .color_functions import cyan, red, yellow
 from .command_push import push_files_to_template
 from .command_tree import display_project_tree
 from .command_ls import list_project_folder
+from .command_help import show_project_help
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -195,7 +196,7 @@ def run_mainapp():
          / _` | '__/ __|/ _ \| '_ \| / __| __|
         | (_| | |  \__ \ (_) | | | | \__ \ |_
          \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.6
+                               version: 1.0.7
         """), bold=True))
         sys.exit(0)
 
@@ -211,9 +212,13 @@ def run_mainapp():
         list_project_folder(ARS_PROJECTS_FOLDER, args)
         sys.exit(0)
 
+    if args.template == "help":
+        show_project_help(ARS_PROJECTS_FOLDER, args)
+        sys.exit(0)
+
     if os.path.isfile(".ars"):
         with open(".ars", "r", encoding='utf8') as f:
-            loaded_project_parameters = json.load(f)
+            loaded_project_parameters = yaml.load(f)
             print(cyan("Using already existing"),
                   cyan("'.ars'", bold=True),
                   cyan("file settings:"),
@@ -260,7 +265,7 @@ def run_mainapp():
 
     if project_definition.generate_ars and not args.noars:
         with open(".ars", "w", encoding='utf8') as json_file:
-            json.dump(project_parameters, json_file)
+            yaml.dump(project_parameters, json_file)
 
     process_folder(".", project_definition.file_resolver(), project_parameters)
 
