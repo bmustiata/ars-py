@@ -55,8 +55,8 @@ def process_folder(current_path: str,
         full_file_path = file_entry.absolute_path
 
         if file_entry.name == "HELP.md" or file_entry.name == ".ars":
-            print(yellow("Ignoring file        :"),
-                  yellow(file_entry.name, bold=True))
+            print(cyan("Ignoring file        :"),
+                  cyan(file_entry.name, bold=True))
             continue
 
         if file_entry.is_dir:
@@ -162,7 +162,7 @@ def run_mainapp():
          / _` | '__/ __|/ _ \| '_ \| / __| __|
         | (_| | |  \__ \ (_) | | | | \__ \ |_
          \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.9
+                               version: 1.0.10
         """), bold=True))
         sys.exit(0)
 
@@ -194,7 +194,7 @@ def run_mainapp():
                   cyan("file settings:"),
                   cyan(loaded_project_parameters, bold=True))
 
-    if args.template == "edit":
+    if args.template in ["edit", "vim", "nvim"]:
         edit_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
         sys.exit(0)
 

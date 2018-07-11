@@ -1,4 +1,5 @@
 from typing import List, Set
+import re
 import os.path
 import os
 
@@ -47,10 +48,12 @@ class FileResolver(object):
                 continue
 
             for found_entry in os.listdir(abs_path):
-                if found_entry in current_files:
+                local_entry = name_without_flags(found_entry)
+
+                if local_entry in current_files:
                     continue
 
-                current_files.add(found_entry)
+                current_files.add(local_entry)
 
                 abs_entry = os.path.join(abs_path, found_entry)
 
@@ -78,3 +81,13 @@ class FileResolver(object):
         return FileResolver(root_projects_folder=self.root_projects_folder,
                             search_path=self.search_path,
                             current_path=os.path.join(self.current_path, sub_path))
+
+
+NAME_EXTRACTOR = re.compile(r'(.*?)(\.hbs)?(\.KEEP)?$')
+
+
+def name_without_flags(name: str) -> str:
+    m = NAME_EXTRACTOR.match(name)
+    assert m
+
+    return m.group(1)
