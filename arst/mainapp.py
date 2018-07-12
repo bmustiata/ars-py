@@ -22,6 +22,7 @@ from .command_ls import list_project_folder
 from .command_help import show_project_help
 from .command_pwd import display_project_location
 from .command_edit import edit_file_from_project
+from .command_diff import diff_file_from_project
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -162,7 +163,7 @@ def run_mainapp():
          / _` | '__/ __|/ _ \| '_ \| / __| __|
         | (_| | |  \__ \ (_) | | | | \__ \ |_
          \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.12
+                               version: 1.0.13
         """), bold=True))
         sys.exit(0)
 
@@ -196,6 +197,10 @@ def run_mainapp():
 
     if args.template in ["edit", "vim", "nvim"]:
         edit_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
+        sys.exit(0)
+
+    if args.template == "diff":
+        diff_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
         sys.exit(0)
 
     if not args.template and not loaded_project_parameters:
