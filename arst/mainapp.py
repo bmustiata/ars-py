@@ -19,6 +19,7 @@ from .project_reader import ProjectDefinition, read_project_definition, ParsedFi
 from .command_push import push_files_to_template
 from .command_tree import display_project_tree
 from .command_ls import list_project_folder
+from .command_lls import list_folder_in_project
 from .command_help import show_project_help
 from .command_pwd import display_project_location
 from .command_edit import edit_file_from_project
@@ -163,7 +164,7 @@ def run_mainapp():
          / _` | '__/ __|/ _ \| '_ \| / __| __|
         | (_| | |  \__ \ (_) | | | | \__ \ |_
          \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.13
+                               version: 1.0.14
         """), bold=True))
         sys.exit(0)
 
@@ -201,6 +202,10 @@ def run_mainapp():
 
     if args.template == "diff":
         diff_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
+        sys.exit(0)
+
+    if args.template == "lls":
+        list_folder_in_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
         sys.exit(0)
 
     if not args.template and not loaded_project_parameters:
