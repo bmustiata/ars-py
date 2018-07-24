@@ -2,9 +2,9 @@ from typing import Optional, Dict
 import os.path
 import subprocess
 
-from .program_arguments import ProgramArguments
-from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
-from .file_resolver import FileResolver
+from arst.program_arguments import ProgramArguments
+from arst.project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
+from arst.file_resolver import FileResolver
 
 
 def process_folder(current_path: str,
