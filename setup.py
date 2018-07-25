@@ -20,7 +20,12 @@ setup(
             "arst = application:launch"
         ]
     },
-    install_requires=["pybars3==0.9.3", "termcolor_util==1.0.1", "colorama==0.3.9", "mdvl==2017.7.16.7", "PyYAML==3.12"],
+    install_requires=[
+        "pybars3==0.9.3",
+        "termcolor_util==1.0.1",
+        "colorama==0.3.9",
+        "mdvl==2017.7.16.7",
+        "PyYAML==3.12"],
     packages=packages,
     package_data={
         '': ['*.txt', '*.rst']
