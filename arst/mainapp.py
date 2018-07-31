@@ -12,18 +12,18 @@ import argparse
 from textwrap import dedent
 from termcolor_util import cyan, red, yellow
 
-from .program_arguments import ProgramArguments
-from .file_resolver import FileResolver
-from .project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
+from arst.program_arguments import ProgramArguments
+from arst.file_resolver import FileResolver, is_first_file_newer
+from arst.project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
 
-from .command_push import push_files_to_template
-from .command_tree import display_project_tree
-from .command_ls import list_project_folder
-from .command_lls import list_folder_in_project
-from .command_help import show_project_help
-from .command_pwd import display_project_location
-from .command_edit import edit_file_from_project
-from .command_diff import diff_file_from_project
+from arst.command_push import push_files_to_template
+from arst.command_tree import display_project_tree
+from arst.command_ls import list_project_folder
+from arst.command_lls import list_folder_in_project
+from arst.command_help import show_project_help
+from arst.command_pwd import display_project_location
+from arst.command_edit import edit_file_from_project
+from arst.command_diff import diff_file_from_project
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
@@ -92,6 +92,11 @@ def process_folder(current_path: str,
                       cyan(full_local_path, bold=True))
                 continue
 
+            if is_first_file_newer(full_local_path, full_file_path):
+                print(cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
+                      cyan(full_local_path, bold=True))
+                continue
+
             # we  have  a conflict.
             full_local_path_orig = full_local_path + ".orig"
             shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
@@ -123,6 +128,11 @@ def process_folder(current_path: str,
 
         if content == open(full_local_path, "r", encoding='utf8').read():
             print(cyan("No update needed     :"),
+                  cyan(full_local_path, bold=True))
+            continue
+
+        if is_first_file_newer(full_local_path, full_file_path):
+            print(cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
                   cyan(full_local_path, bold=True))
             continue
 

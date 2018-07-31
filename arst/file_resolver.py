@@ -1,6 +1,5 @@
 from typing import List, Set
 import re
-import os.path
 import os
 
 
@@ -91,3 +90,16 @@ def name_without_flags(name: str) -> str:
     assert m
 
     return m.group(1)
+
+
+def is_first_file_newer(first_file: str,
+                        second_file: str) -> bool:
+    """
+    Checks if the last modification date of the first file
+    is after the modification date of the second file.
+    """
+    first_file_time = os.path.getmtime(first_file)
+    second_file_time = os.path.getmtime(second_file)
+
+    return first_file_time >= second_file_time
+
