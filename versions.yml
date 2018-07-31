@@ -1,5 +1,5 @@
 version:
-  version: 1.0.15
+  version: 1.0.16
   files:
     setup.py: version='**VERSION**',
     arst/mainapp.py: 'version: **VERSION$$'
