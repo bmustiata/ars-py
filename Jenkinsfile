@@ -1,7 +1,7 @@
 germaniumPyExePipeline(
     binaries: [
         "Lin 64": [
-            exe: "/src/dist/main",
+            exe: "/src/dist/arst",
             dockerTag: "arst"
         ]
     ]
