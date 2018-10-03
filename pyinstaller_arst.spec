@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['arst/launcher.py'],
+a = Analysis(['arst/mainapp.py'],
              pathex=['.'],
              binaries=[],
              datas=[],

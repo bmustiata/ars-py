@@ -270,3 +270,7 @@ def main():
         run_mainapp()
     finally:
         colorama.deinit()
+
+
+if __name__ == '__main__':
+    main()

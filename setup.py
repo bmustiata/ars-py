@@ -16,8 +16,8 @@ setup(
     license='BSD',
     entry_points={
         "console_scripts": [
-            "ars = application:launch",
-            "arst = application:launch"
+            "ars = arst.mainapp:main",
+            "arst = arst.mainapp:main"
         ]
     },
     install_requires=[
