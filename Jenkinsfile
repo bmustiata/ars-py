@@ -1,11 +1,9 @@
-stage('Build executable') {
-    node {
-        deleteDir()
-        checkout scm
+germaniumPyExePipeline(
+    binaries: [
+        "Lin 64": [
+            exe: "/src/dist/main",
+            dockerTag: "arst"
+        ]
+    ]
+)
 
-        docker.build('arst')
-              .inside {
-            archiveArtifacts artifacts: '/src/dist/arst'
-        }
-    }
-}
