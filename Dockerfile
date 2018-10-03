@@ -1,1 +1,1 @@
-FROM py36-build
+FROM germaniumhq/python-build:3.6
