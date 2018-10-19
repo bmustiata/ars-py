@@ -1,5 +1,5 @@
 version:
-  version: 1.0.17
+  version: $(version-manager --tag)
   files:
     setup.py: version='**VERSION**',
     arst/mainapp.py: 'version: **VERSION$$'
