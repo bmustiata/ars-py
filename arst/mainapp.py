@@ -46,7 +46,8 @@ def execute_diff(file1: str, file2: str) -> None:
 
 def process_folder(current_path: str,
                    file_resolver: FileResolver,
-                   project_parameters: Dict[str, str]) -> None:
+                   project_parameters: Dict[str, str],
+                   auto_resolve_conflicts: bool) -> None:
     """
     Recursively process the handlebars templates for the given project.
     """
@@ -72,7 +73,8 @@ def process_folder(current_path: str,
 
             process_folder(full_local_path,
                            file_resolver.subentry(file_entry),
-                           project_parameters)
+                           project_parameters,
+                           auto_resolve_conflicts)
             continue
 
         if file.keep_existing and os.path.isfile(full_local_path):
@@ -98,6 +100,16 @@ def process_folder(current_path: str,
                 continue
 
             # we  have  a conflict.
+            if auto_resolve_conflicts:
+                print(red("Conflict"),
+                      red("auto", bold=True),
+                      red("       :"),
+                      red(full_local_path, bold=True))
+
+                shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
+
+                continue
+
             full_local_path_orig = full_local_path + ".orig"
             shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
             shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
@@ -136,6 +148,19 @@ def process_folder(current_path: str,
                   cyan(full_local_path, bold=True))
             continue
 
+        # we  have  a conflict.
+        if auto_resolve_conflicts:
+            print(red("Conflict"),
+                  red("auto", bold=True),
+                  red("HBS    :"),
+                  red(full_local_path, bold=True))
+
+            with open(full_local_path, "w", encoding='utf8') as content_file:
+                content_file.write(content)
+
+            continue
+
+        # we have a conflict
         full_local_path_orig = full_local_path + ".orig"
         shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
         with open(full_local_path, "w", encoding='utf8') as content_file:
@@ -159,6 +184,10 @@ def run_mainapp():
 
     parser = argparse.ArgumentParser(description="Poor man's yo for quick project generation.")
     parser.add_argument("-n", "--noars", default=False, action="store_true", help="Don't generate the .ars file.")
+    parser.add_argument("--auto",
+                        default=False,
+                        action="store_true",
+                        help="Don't open the conflict dialog, just overwrite")
     parser.add_argument("-v", "--version", default=False, action="store_true", help="Show the project version.")
     parser.add_argument("template", help="The template/command to generate/run.", nargs="?")
     parser.add_argument("parameter", help="Generation parameters.", nargs='*')
@@ -261,7 +290,10 @@ def run_mainapp():
         with open(".ars", "w", encoding='utf8') as json_file:
             yaml.dump(project_parameters, json_file)
 
-    process_folder(".", project_definition.file_resolver(), project_parameters)
+    process_folder(".",
+                   project_definition.file_resolver(),
+                   project_parameters,
+                   auto_resolve_conflicts=args.auto)
 
 
 def main():

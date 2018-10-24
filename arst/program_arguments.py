@@ -5,3 +5,4 @@ class ProgramArguments(object):
     template: str
     parameter: List[str]
     noars: bool
+    auto: bool
