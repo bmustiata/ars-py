@@ -10,6 +10,8 @@ import re
 from typing import Dict, Optional
 import argparse
 from textwrap import dedent
+import datetime
+import time
 from termcolor_util import cyan, red, yellow
 
 from arst.program_arguments import ProgramArguments
@@ -37,6 +39,10 @@ ARS_DIFF_TOOL: str = os.environ["ARS_DIFF_TOOL"]\
 PARAM_RE = re.compile("^(.*?)(=(.*))?$")
 
 
+def now() -> int:
+    return time.mktime(datetime.datetime.now().timetuple())
+
+
 def execute_diff(file1: str, file2: str) -> None:
     """
     Run an external diff program on the two files
@@ -47,7 +53,8 @@ def execute_diff(file1: str, file2: str) -> None:
 def process_folder(current_path: str,
                    file_resolver: FileResolver,
                    project_parameters: Dict[str, str],
-                   auto_resolve_conflicts: bool) -> None:
+                   auto_resolve_conflicts: bool,
+                   keep_current_files_on_conflict: bool) -> None:
     """
     Recursively process the handlebars templates for the given project.
     """
@@ -74,7 +81,8 @@ def process_folder(current_path: str,
             process_folder(full_local_path,
                            file_resolver.subentry(file_entry),
                            project_parameters,
-                           auto_resolve_conflicts)
+                           auto_resolve_conflicts,
+                           keep_current_files_on_conflict)
             continue
 
         if file.keep_existing and os.path.isfile(full_local_path):
@@ -107,6 +115,16 @@ def process_folder(current_path: str,
                       red(full_local_path, bold=True))
 
                 shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
+
+                continue
+
+            if keep_current_files_on_conflict:
+                print(red("Conflict"),
+                      red("keep", bold=True),
+                      red("       :"),
+                      red(full_local_path, bold=True))
+
+                os.utime(full_local_path, (now(), now()))
 
                 continue
 
@@ -160,6 +178,16 @@ def process_folder(current_path: str,
 
             continue
 
+        if keep_current_files_on_conflict:
+            print(red("Conflict"),
+                  red("auto", bold=True),
+                  red("HBS    :"),
+                  red(full_local_path, bold=True))
+
+            os.utime(full_local_path, (now(), now()))
+
+            continue
+
         # we have a conflict
         full_local_path_orig = full_local_path + ".orig"
         shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
@@ -184,6 +212,10 @@ def run_mainapp():
 
     parser = argparse.ArgumentParser(description="Poor man's yo for quick project generation.")
     parser.add_argument("-n", "--noars", default=False, action="store_true", help="Don't generate the .ars file.")
+    parser.add_argument("--keep",
+                        default=False,
+                        action="store_true",
+                        help="Don't open the conflict dialog, just keep files")
     parser.add_argument("--auto",
                         default=False,
                         action="store_true",
@@ -293,7 +325,8 @@ def run_mainapp():
     process_folder(".",
                    project_definition.file_resolver(),
                    project_parameters,
-                   auto_resolve_conflicts=args.auto)
+                   auto_resolve_conflicts=args.auto,
+                   keep_current_files_on_conflict=args.keep)
 
 
 def main():

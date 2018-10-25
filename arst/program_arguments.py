@@ -6,3 +6,4 @@ class ProgramArguments(object):
     parameter: List[str]
     noars: bool
     auto: bool
+    keep: bool
