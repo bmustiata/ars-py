@@ -39,7 +39,7 @@ ARS_DIFF_TOOL: str = os.environ["ARS_DIFF_TOOL"]\
 PARAM_RE = re.compile("^(.*?)(=(.*))?$")
 
 
-def now() -> int:
+def now() -> float:
     return time.mktime(datetime.datetime.now().timetuple())
 
 
