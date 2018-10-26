@@ -21,7 +21,7 @@ def display_project_tree(projects_folder: str,
     display_current_folder(file_resolver)
 
 
-def display_current_folder(file_resolver: FileResolver, indent: int=0) -> None:
+def display_current_folder(file_resolver: FileResolver, indent: int = 0) -> None:
     for entry in file_resolver.listdir():
         if entry.is_dir:
             print("  " * indent + blue(entry.name, bold=True) + gray(f" ({entry.owning_project})", bold=True))

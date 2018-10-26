@@ -229,7 +229,7 @@ def run_mainapp():
     loaded_project_parameters: Optional[Dict[str, str]] = None
 
     if args.version:
-        print(cyan(dedent("""\
+        print(cyan(dedent(r"""\
                                     _     _
           __ _ _ __ ___  ___  _ __ (_)___| |_
          / _` | '__/ __|/ _ \| '_ \| / __| __|

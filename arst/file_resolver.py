@@ -65,7 +65,7 @@ class FileResolver(object):
         result.sort(key=lambda it: (not it.is_dir, it.name.lower()))
         return result
 
-    def subentry(self, entry: FileEntry=None, path: str=None) -> 'FileResolver':
+    def subentry(self, entry: FileEntry = None, path: str = None) -> 'FileResolver':
         if not entry and not path:
             raise Exception("You need to pass an entry or a subpath")
 

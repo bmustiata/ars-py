@@ -32,7 +32,7 @@ class ProjectDefinition(object):
     def __init__(self,
                  projects_folder: str,
                  name: str,
-                 generate_ars: bool=True) -> None:
+                 generate_ars: bool = True) -> None:
         self.name = name
         self.projects_folder = projects_folder
         self.search_path = [name]
