@@ -8,7 +8,7 @@ packages = find_packages()
 
 setup(
     name='arst',
-    version='master',
+    version='1.0.21',
     description='Poor man\'s yo generator.',
     long_description=readme,
     author='Bogdan Mustiata',
@@ -25,7 +25,7 @@ setup(
         "termcolor_util >=1.0.1, < 1.1",
         "colorama >=0.3.7, <0.4",
         "mdvl >=2017.7.16.7, <2017.8",
-        "PyYAML >=3.12, <4",
+        "PyYAML >=5.1, <5.2",
         ""],
     packages=packages,
     package_data={
