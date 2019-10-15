@@ -1,3 +1,9 @@
+from typing import Callable, TypeVar
+
+T = TypeVar('T')
+
+import functools
+import click
 import filecmp
 import yaml
 import os
@@ -201,12 +207,85 @@ def process_folder(current_path: str,
               red(full_local_path, bold=True))
 
 
-def run_mainapp():
-    """
-    Run the main application.
+def coloramafn(f: Callable[..., T]) -> Callable[..., T]:
+    @functools.wraps(f)
+    def wrapper(*args, **kw) -> T:
+        try:
+            colorama.init()
+            return f(*args, **kw)
+        finally:
+            colorama.deinit()
 
-    Implicitly the command will try to generate a project from one of the given
-    templates.
+    return wrapper
+
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def main(ctx):
+    if ctx.invoked_subcommand is None:
+        generate()
+
+
+@main.command()
+@coloramafn
+def version():
+    """
+    Print the current application version
+    """
+
+    print(cyan(dedent(r"""\
+                                _     _
+      __ _ _ __ ___  ___  _ __ (_)___| |_
+     / _` | '__/ __|/ _ \| '_ \| / __| __|
+    | (_| | |  \__ \ (_) | | | | \__ \ |_
+     \__,_|_|  |___/\___/|_| |_|_|___/\__|
+                           version: 1.0.21
+    """), bold=True))
+    sys.exit(0)
+
+
+@main.command()
+@coloramafn
+def push():
+    """
+    Push a file into the template
+    """
+    push_files_to_template(ARS_PROJECTS_FOLDER, args)
+
+
+@main.command()
+@coloramafn
+def tree():
+    """
+    Display the project tree
+    """
+    display_project_tree(ARS_PROJECTS_FOLDER, args)
+
+
+@main.command()
+@coloramafn
+def ls():
+    """
+    List the project folder
+    """
+    list_project_folder(ARS_PROJECTS_FOLDER, args)
+
+
+@main.command()
+@click.argument('project_name')
+@coloramafn
+def pwd(project_name):
+    """
+    Display the project location
+    """
+    display_project_location(ARS_PROJECTS_FOLDER, project_name)
+
+
+@main.command()
+@coloramafn
+def generate():
+    """
+    Generate or update the project sources
     """
     global project_parameters
 
@@ -220,44 +299,12 @@ def run_mainapp():
                         default=False,
                         action="store_true",
                         help="Don't open the conflict dialog, just overwrite")
-    parser.add_argument("-v", "--version", default=False, action="store_true", help="Show the project version.")
     parser.add_argument("template", help="The template/command to generate/run.", nargs="?")
     parser.add_argument("parameter", help="Generation parameters.", nargs='*')
 
     args: ProgramArguments = parser.parse_args()
 
     loaded_project_parameters: Optional[Dict[str, str]] = None
-
-    if args.version:
-        print(cyan(dedent(r"""\
-                                    _     _
-          __ _ _ __ ___  ___  _ __ (_)___| |_
-         / _` | '__/ __|/ _ \| '_ \| / __| __|
-        | (_| | |  \__ \ (_) | | | | \__ \ |_
-         \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                               version: 1.0.21
-        """), bold=True))
-        sys.exit(0)
-
-    if args.template == "push":
-        push_files_to_template(ARS_PROJECTS_FOLDER, args)
-        sys.exit(0)
-
-    if args.template == "tree":
-        display_project_tree(ARS_PROJECTS_FOLDER, args)
-        sys.exit(0)
-
-    if args.template == "ls":
-        list_project_folder(ARS_PROJECTS_FOLDER, args)
-        sys.exit(0)
-
-    if args.template == "help":
-        show_project_help(ARS_PROJECTS_FOLDER, args)
-        sys.exit(0)
-
-    if args.template == "pwd":
-        display_project_location(ARS_PROJECTS_FOLDER, args)
-        sys.exit(0)
 
     if os.path.isfile(".ars"):
         with open(".ars", "r", encoding='utf8') as f:
@@ -327,14 +374,6 @@ def run_mainapp():
                    project_parameters,
                    auto_resolve_conflicts=args.auto,
                    keep_current_files_on_conflict=args.keep)
-
-
-def main():
-    try:
-        colorama.init()
-        run_mainapp()
-    finally:
-        colorama.deinit()
 
 
 if __name__ == '__main__':
