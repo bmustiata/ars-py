@@ -1,10 +1,9 @@
-from typing import Optional, Dict
 import os.path
 import subprocess
+from typing import Optional, Dict
 
-from .program_arguments import ProgramArguments
-from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
 from .file_resolver import FileResolver
+from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
 
 
 def process_folder(current_path: str,
@@ -31,16 +30,10 @@ def process_folder(current_path: str,
 
 
 def diff_file_from_project(projects_folder: str,
-                           args: ProgramArguments,
+                           project_name: str,
+                           file_to_edit: str,
                            loaded_project_parameters: Optional[Dict[str, str]]) -> None:
     assert loaded_project_parameters
-
-    if len(args.parameter) >= 2:
-        project_name = args.parameter[0]
-        file_to_edit = args.parameter[1]
-    else:
-        project_name = loaded_project_parameters["NAME"]
-        file_to_edit = args.parameter[0]
 
     project_definition: ProjectDefinition = read_project_definition(projects_folder, project_name)
     path_mappings: Dict[str, str] = dict()

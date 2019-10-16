@@ -1,10 +1,11 @@
-from typing import Optional, Dict
-from termcolor_util import green, blue, red, gray
 import os.path
+import sys
+from typing import Optional, Dict
 
-from .program_arguments import ProgramArguments
-from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
+from termcolor_util import green, blue, red, gray
+
 from .file_resolver import FileResolver, FileEntry
+from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
 
 
 def process_folder(current_path: str,
@@ -25,16 +26,13 @@ def process_folder(current_path: str,
 
 
 def list_folder_in_project(projects_folder: str,
-                           args: ProgramArguments,
+                           folder_to_list: str,
                            loaded_project_parameters: Optional[Dict[str, str]]) -> None:
-    assert loaded_project_parameters
+    if not loaded_project_parameters:
+        print(red("Unable to find a project. .ars file is missing."))
+        sys.exit(1)
 
     project_name = loaded_project_parameters["NAME"]
-
-    if args.parameter:
-        folder_to_list = args.parameter[0]
-    else:
-        folder_to_list = "."
 
     project_definition: ProjectDefinition = read_project_definition(projects_folder, project_name)
     path_mappings: Dict[str, FileEntry] = dict()

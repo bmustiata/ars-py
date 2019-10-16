@@ -8,13 +8,7 @@ from .file_resolver import FileResolver
 
 
 def display_project_tree(projects_folder: str,
-                         args: ProgramArguments) -> None:
-    if not args.parameter or len(args.parameter) < 1:
-        print(red("Invalid number of parameters sent to tree. Specify project."))
-        sys.exit(1)
-
-    project_name = args.parameter[0]
-
+                         project_name: str) -> None:
     project_definition = read_project_definition(projects_folder=projects_folder,
                                                  project_name=project_name)
     file_resolver = project_definition.file_resolver()

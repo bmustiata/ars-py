@@ -14,13 +14,11 @@ import colorama
 import subprocess
 import re
 from typing import Dict, Optional
-import argparse
 from textwrap import dedent
 import datetime
 import time
 from termcolor_util import cyan, red, yellow
 
-from arst.program_arguments import ProgramArguments
 from arst.file_resolver import FileResolver, is_first_file_newer
 from arst.project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
 
@@ -28,7 +26,6 @@ from arst.command_push import push_files_to_template
 from arst.command_tree import display_project_tree
 from arst.command_ls import list_project_folder
 from arst.command_lls import list_folder_in_project
-from arst.command_help import show_project_help
 from arst.command_pwd import display_project_location
 from arst.command_edit import edit_file_from_project
 from arst.command_diff import diff_file_from_project
@@ -54,6 +51,236 @@ def execute_diff(file1: str, file2: str) -> None:
     Run an external diff program on the two files
     """
     subprocess.call([ARS_DIFF_TOOL, file1, file2])
+
+
+def coloramafn(f: Callable[..., T]) -> Callable[..., T]:
+    @functools.wraps(f)
+    def wrapper(*args, **kw) -> T:
+        try:
+            colorama.init()
+            return f(*args, **kw)
+        finally:
+            colorama.deinit()
+
+    return wrapper
+
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def main(ctx):
+    if ctx.invoked_subcommand is None:
+        generate()
+
+
+@main.command()
+@coloramafn
+def version():
+    """
+    Print the current application version
+    """
+    print(cyan(dedent(r"""\
+                                _     _
+      __ _ _ __ ___  ___  _ __ (_)___| |_
+     / _` | '__/ __|/ _ \| '_ \| / __| __|
+    | (_| | |  \__ \ (_) | | | | \__ \ |_
+     \__,_|_|  |___/\___/|_| |_|_|___/\__|
+                           version: 1.0.21
+    """), bold=True))
+    sys.exit(0)
+
+
+@main.command()
+@click.option('--project', required=False)
+@click.argument('files_to_push', nargs=-1)
+@coloramafn
+def push(*, project, files_to_push):
+    """
+    Push a file into the template
+    """
+    if not project:
+        project_parameters = load_project_parameters()
+
+        if not project_parameters:
+            print(red("Not in a project."),
+                  red(".ars", bold=True),
+                  red("file not found."))
+            sys.exit(1)
+
+        project = project_parameters['NAME']
+
+    push_files_to_template(ARS_PROJECTS_FOLDER, project, files_to_push)
+
+
+@main.command()
+@click.argument('project_name')
+@coloramafn
+def tree(project_name):
+    """
+    Display the project tree
+    """
+    display_project_tree(ARS_PROJECTS_FOLDER, project_name)
+
+
+@main.command()
+@click.argument('project_folder', required=False)
+@coloramafn
+def ls(project_folder):
+    """
+    List the project folder
+    """
+    list_project_folder(ARS_PROJECTS_FOLDER, project_folder)
+
+
+@main.command()
+@click.argument('project_name')
+@coloramafn
+def pwd(project_name):
+    """
+    Display the project location
+    """
+    display_project_location(ARS_PROJECTS_FOLDER, project_name)
+
+
+@main.command()
+@click.option('--project', required=False)
+@click.argument('file_to_edit')
+@coloramafn
+def edit(project: Optional[str], file_to_edit: str) -> None:
+    """
+    Edit a file from the project.
+    """
+    project_parameters = load_project_parameters()
+
+    if not project_parameters:
+        print(red("Not in a project."),
+              red(".ars", bold=True),
+              red("file not found."))
+        sys.exit(1)
+
+    if not project:
+        project = project_parameters['NAME']
+
+    edit_file_from_project(ARS_PROJECTS_FOLDER,
+                           project,
+                           file_to_edit,
+                           load_project_parameters())
+
+
+@main.command()
+@click.option('--project', required=False)
+@click.argument('file_to_diff')
+@coloramafn
+def diff(project: Optional[str], file_to_diff: str) -> None:
+    """
+    Diff a file against the template.
+    """
+    project_parameters = load_project_parameters()
+
+    if not project_parameters:
+        print(red("Not in a project."),
+              red(".ars", bold=True),
+              red("file not found."))
+        sys.exit(1)
+
+    if not project:
+        project = project_parameters['NAME']
+
+    print(cyan("Diffing"),
+          cyan(file_to_diff, bold=True),
+          cyan("against project"),
+          cyan(project, bold=True))
+
+    diff_file_from_project(ARS_PROJECTS_FOLDER,
+                           project,
+                           file_to_diff,
+                           project_parameters)
+
+
+@main.command()
+@click.argument('folder_to_list', default=".")
+@coloramafn
+def lls(folder_to_list: str) -> None:
+    """
+    List a folder from the project
+    """
+    list_folder_in_project(ARS_PROJECTS_FOLDER,
+                           folder_to_list,
+                           load_project_parameters())
+
+
+def load_project_parameters() -> Optional[Dict[str, str]]:
+    loaded_project_parameters: Optional[Dict[str, str]] = None
+
+    if os.path.isfile(".ars"):
+        with open(".ars", "r", encoding='utf8') as f:
+            loaded_project_parameters = yaml.safe_load(f)
+            print(cyan("Using already existing"),
+                  cyan("'.ars'", bold=True),
+                  cyan("file settings:"),
+                  cyan(str(loaded_project_parameters), bold=True))
+
+    return loaded_project_parameters
+
+
+@main.command()
+@click.option('--ars/--no-ars', default=True)
+@click.option('--auto', required=False)
+@click.option('--keep', required=False)
+@click.argument('template', required=False)
+@click.argument('parameters', nargs=-1)
+@coloramafn
+def generate(ars, auto, keep, template, parameters):
+    """
+    Generate or update the project sources
+    """
+    loaded_project_parameters = load_project_parameters()
+
+    if not template and not loaded_project_parameters:
+        print(red("You need to pass a project name to generate."))
+
+        if os.path.isdir(ARS_PROJECTS_FOLDER):
+            print("Available projects (%s):" % cyan(ARS_PROJECTS_FOLDER))
+            list_project_folder(ARS_PROJECTS_FOLDER, None)
+        else:
+            print(f"{ARS_PROJECTS_FOLDER} folder doesn't exist.")
+
+        sys.exit(1)
+
+    # if we have arguments, we need to either create, or augument the projectParameters
+    # with the new settings.
+    project_parameters = loaded_project_parameters if loaded_project_parameters else dict()
+
+    if template:
+        project_parameters['NAME'] = template
+
+    # we iterate the rest of the parameters, and augument the projectParameters
+    for i in range(len(parameters)):
+        m = PARAM_RE.match(parameters[i])
+        param_name = m.group(1)
+        param_value = m.group(3) if m.group(3) else True
+
+        project_parameters[param_name] = param_value
+        project_parameters[f"arg{i}"] = parameters[i]
+
+    project_name = project_parameters["NAME"]
+
+    project_definition: ProjectDefinition = read_project_definition(ARS_PROJECTS_FOLDER, project_name)
+
+    # Generate the actual project.
+    print(cyan("Generating"),
+          cyan(project_name, bold=True),
+          cyan("with"),
+          cyan(str(project_parameters), bold=True))
+
+    if project_definition.generate_ars and ars:
+        with open(".ars", "w", encoding='utf8') as json_file:
+            yaml.safe_dump(project_parameters, json_file)
+
+    process_folder(".",
+                   project_definition.file_resolver(),
+                   project_parameters,
+                   auto_resolve_conflicts=auto,
+                   keep_current_files_on_conflict=keep)
 
 
 def process_folder(current_path: str,
@@ -205,175 +432,6 @@ def process_folder(current_path: str,
 
         print(red("Conflict resolved HBS:"),
               red(full_local_path, bold=True))
-
-
-def coloramafn(f: Callable[..., T]) -> Callable[..., T]:
-    @functools.wraps(f)
-    def wrapper(*args, **kw) -> T:
-        try:
-            colorama.init()
-            return f(*args, **kw)
-        finally:
-            colorama.deinit()
-
-    return wrapper
-
-
-@click.group(invoke_without_command=True)
-@click.pass_context
-def main(ctx):
-    if ctx.invoked_subcommand is None:
-        generate()
-
-
-@main.command()
-@coloramafn
-def version():
-    """
-    Print the current application version
-    """
-
-    print(cyan(dedent(r"""\
-                                _     _
-      __ _ _ __ ___  ___  _ __ (_)___| |_
-     / _` | '__/ __|/ _ \| '_ \| / __| __|
-    | (_| | |  \__ \ (_) | | | | \__ \ |_
-     \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                           version: 1.0.21
-    """), bold=True))
-    sys.exit(0)
-
-
-@main.command()
-@coloramafn
-def push():
-    """
-    Push a file into the template
-    """
-    push_files_to_template(ARS_PROJECTS_FOLDER, args)
-
-
-@main.command()
-@coloramafn
-def tree():
-    """
-    Display the project tree
-    """
-    display_project_tree(ARS_PROJECTS_FOLDER, args)
-
-
-@main.command()
-@coloramafn
-def ls():
-    """
-    List the project folder
-    """
-    list_project_folder(ARS_PROJECTS_FOLDER, args)
-
-
-@main.command()
-@click.argument('project_name')
-@coloramafn
-def pwd(project_name):
-    """
-    Display the project location
-    """
-    display_project_location(ARS_PROJECTS_FOLDER, project_name)
-
-
-@main.command()
-@coloramafn
-def generate():
-    """
-    Generate or update the project sources
-    """
-    global project_parameters
-
-    parser = argparse.ArgumentParser(description="Poor man's yo for quick project generation.")
-    parser.add_argument("-n", "--noars", default=False, action="store_true", help="Don't generate the .ars file.")
-    parser.add_argument("--keep",
-                        default=False,
-                        action="store_true",
-                        help="Don't open the conflict dialog, just keep files")
-    parser.add_argument("--auto",
-                        default=False,
-                        action="store_true",
-                        help="Don't open the conflict dialog, just overwrite")
-    parser.add_argument("template", help="The template/command to generate/run.", nargs="?")
-    parser.add_argument("parameter", help="Generation parameters.", nargs='*')
-
-    args: ProgramArguments = parser.parse_args()
-
-    loaded_project_parameters: Optional[Dict[str, str]] = None
-
-    if os.path.isfile(".ars"):
-        with open(".ars", "r", encoding='utf8') as f:
-            loaded_project_parameters = yaml.load(f)
-            print(cyan("Using already existing"),
-                  cyan("'.ars'", bold=True),
-                  cyan("file settings:"),
-                  cyan(loaded_project_parameters, bold=True))
-
-    if args.template in ["edit", "vim", "nvim"]:
-        edit_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
-        sys.exit(0)
-
-    if args.template == "diff":
-        diff_file_from_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
-        sys.exit(0)
-
-    if args.template == "lls":
-        list_folder_in_project(ARS_PROJECTS_FOLDER, args, loaded_project_parameters)
-        sys.exit(0)
-
-    if not args.template and not loaded_project_parameters:
-        print(red("You need to pass a project name to generate."))
-
-        if os.path.isdir(ARS_PROJECTS_FOLDER):
-            print("Available projects (%s):" % cyan(ARS_PROJECTS_FOLDER))
-            for file_name in os.listdir(ARS_PROJECTS_FOLDER):
-                if os.path.isdir(os.path.join(ARS_PROJECTS_FOLDER, file_name)):
-                    print(f" * {file_name}")
-        else:
-            print(f"{ARS_PROJECTS_FOLDER} folder doesn't exist.")
-
-        sys.exit(1)
-
-    # if we have arguments, we need to either create, or augument the projectParameters
-    # with the new settings.
-    project_parameters = loaded_project_parameters if loaded_project_parameters else dict()
-
-    if args.template:
-        project_parameters['NAME'] = args.template
-
-    # we iterate the rest of the parameters, and augument the projectParameters
-    for i in range(len(args.parameter)):
-        m = PARAM_RE.match(args.parameter[i])
-        param_name = m.group(1)
-        param_value = m.group(3) if m.group(3) else True
-
-        project_parameters[param_name] = param_value
-        project_parameters[f"arg{i}"] = args.parameter[i]
-
-    project_name = project_parameters["NAME"]
-
-    project_definition: ProjectDefinition = read_project_definition(ARS_PROJECTS_FOLDER, project_name)
-
-    # Generate the actual project.
-    print(cyan("Generating"),
-          cyan(project_name, bold=True),
-          cyan("with"),
-          cyan(project_parameters, bold=True))
-
-    if project_definition.generate_ars and not args.noars:
-        with open(".ars", "w", encoding='utf8') as json_file:
-            yaml.dump(project_parameters, json_file)
-
-    process_folder(".",
-                   project_definition.file_resolver(),
-                   project_parameters,
-                   auto_resolve_conflicts=args.auto,
-                   keep_current_files_on_conflict=args.keep)
 
 
 if __name__ == '__main__':

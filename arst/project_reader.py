@@ -93,7 +93,7 @@ def read_project_definition(projects_folder: str,
         return result
 
     with open(template_settings_path, encoding='utf-8') as template_settings_content:
-        settings = yaml.load(template_settings_content.read())
+        settings = yaml.safe_load(template_settings_content.read())
 
     if "noars" in settings and settings["noars"]:
         result.generate_ars = False

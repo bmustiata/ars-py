@@ -1,23 +1,15 @@
-import sys
-import shutil
 import os.path
 import pathlib
+import shutil
+from typing import List
 
-from termcolor_util import red, yellow
-
-from .program_arguments import ProgramArguments
+from termcolor_util import yellow
 
 
 def push_files_to_template(projects_folder: str,
-                           args: ProgramArguments) -> None:
-
-    if not args.parameter or len(args.parameter) < 2:
-        print(red("Invalid number of parameters sent to push. Send at least project + 1 file"))
-        sys.exit(1)
-
-    project_name = args.parameter[0]
-
-    for file_name in args.parameter[1:]:
+                           project_name: str,
+                           files_to_push: List[str]) -> None:
+    for file_name in files_to_push:
         recursively_push_file(projects_folder, project_name, file_name)
 
 

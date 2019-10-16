@@ -10,20 +10,20 @@ from .file_resolver import FileResolver
 LS_PARSER = re.compile(r'^(.+?)(/(.*))?$')
 
 
-def list_project_folder(projects_folder: str,
-                        args: ProgramArguments) -> None:
-    if not args.parameter or len(args.parameter) < 1:
+def list_project_folder(projects_location: str,
+                        project_folder) -> None:
+    if not project_folder:
         project_name = "."
         folder_path = ""
     else:
-        m = LS_PARSER.match(args.parameter[0])
+        m = LS_PARSER.match(project_folder)
 
         assert m
 
         project_name = m.group(1)
         folder_path = m.group(3)
 
-    project_definition = read_project_definition(projects_folder=projects_folder,
+    project_definition = read_project_definition(projects_folder=projects_location,
                                                  project_name=project_name)
     file_resolver = project_definition.file_resolver()
 
