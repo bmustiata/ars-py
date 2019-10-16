@@ -1,10 +1,7 @@
-import sys
+from termcolor_util import green, blue, gray
 
-from termcolor_util import red, green, blue, gray
-
-from .program_arguments import ProgramArguments
-from .project_reader import read_project_definition
 from .file_resolver import FileResolver
+from .project_reader import read_project_definition
 
 
 def display_project_tree(projects_folder: str,

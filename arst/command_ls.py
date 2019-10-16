@@ -2,10 +2,8 @@ import re
 
 from termcolor_util import green, blue, gray
 
-from .program_arguments import ProgramArguments
-from .project_reader import read_project_definition
 from .file_resolver import FileResolver
-
+from .project_reader import read_project_definition
 
 LS_PARSER = re.compile(r'^(.+?)(/(.*))?$')
 

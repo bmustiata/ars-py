@@ -1,7 +1,5 @@
 from typing import Callable, TypeVar
 
-T = TypeVar('T')
-
 import functools
 import click
 import filecmp
@@ -29,6 +27,9 @@ from arst.command_lls import list_folder_in_project
 from arst.command_pwd import display_project_location
 from arst.command_edit import edit_file_from_project
 from arst.command_diff import diff_file_from_project
+
+T = TypeVar('T')
+
 
 ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
     if "ARS_PROJECTS_FOLDER" in os.environ\
