@@ -213,7 +213,7 @@ def lls(folder_to_list: str) -> None:
 
 
 def load_project_parameters() -> Optional[Dict[str, Union[str, List[str]]]]:
-    loaded_project_parameters: Optional[Dict[str, str]] = None
+    loaded_project_parameters: Optional[Dict[str, Union[str, List[str]]]] = None
 
     if os.path.isfile(".ars"):
         with open(".ars", "r", encoding='utf8') as f:
@@ -295,7 +295,7 @@ def generate(ars, auto, keep, template, parameters):
 
 def process_folder(current_path: str,
                    file_resolver: FileResolver,
-                   project_parameters: Dict[str, str],
+                   project_parameters: Dict[str, Union[str, List[str]]],
                    auto_resolve_conflicts: bool,
                    keep_current_files_on_conflict: bool) -> None:
     """

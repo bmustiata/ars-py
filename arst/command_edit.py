@@ -1,6 +1,7 @@
+from typing import Optional, Dict, List, Union
+
 import os.path
 import subprocess
-from typing import Optional, Dict
 
 from .file_resolver import FileResolver
 from .project_reader import read_project_definition, ProjectDefinition, parse_file_name, ParsedFile
@@ -8,7 +9,7 @@ from .project_reader import read_project_definition, ProjectDefinition, parse_fi
 
 def process_folder(current_path: str,
                    file_resolver: FileResolver,
-                   project_parameters: Dict[str, str],
+                   project_parameters: Dict[str, Union[str, List[str]]],
                    path_mappings: Dict[str, str]) -> None:
     """
     Recursively process the handlebars templates for the given project.
@@ -32,7 +33,7 @@ def process_folder(current_path: str,
 def edit_file_from_project(projects_folder: str,
                            project_name: str,
                            file_to_edit: str,
-                           loaded_project_parameters: Optional[Dict[str, str]]) -> None:
+                           loaded_project_parameters: Optional[Dict[str, Union[str, List[str]]]]) -> None:
     assert loaded_project_parameters
 
     project_definition: ProjectDefinition = read_project_definition(projects_folder, project_name)

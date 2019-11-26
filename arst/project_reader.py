@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 import mdvl
 import sys
 import os.path
@@ -43,7 +43,7 @@ class ProjectDefinition(object):
                             search_path=self.search_path)
 
 
-def parse_file_name(file_name: str, project_parameters: Dict[str, str]) -> ParsedFile:
+def parse_file_name(file_name: str, project_parameters: Dict[str, Union[str, List[str]]]) -> ParsedFile:
     """
     parseFileName - Parse the fie name
     :param file_name: string with filename

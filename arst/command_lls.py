@@ -1,6 +1,6 @@
 import os.path
 import sys
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from termcolor_util import green, blue, red, gray
 
@@ -10,7 +10,7 @@ from .project_reader import read_project_definition, ProjectDefinition, parse_fi
 
 def process_folder(current_path: str,
                    file_resolver: FileResolver,
-                   project_parameters: Dict[str, str],
+                   project_parameters: Dict[str, Union[str, List[str]]],
                    path_mappings: Dict[str, FileEntry]) -> None:
     """
     Recursively process the handlebars templates for the given project.
@@ -27,7 +27,7 @@ def process_folder(current_path: str,
 
 def list_folder_in_project(projects_folder: str,
                            folder_to_list: str,
-                           loaded_project_parameters: Optional[Dict[str, str]]) -> None:
+                           loaded_project_parameters: Optional[Dict[str, Union[str, List[str]]]]) -> None:
     # While it's possible to have multiple templates in the project, when listing the
     # current folder, only the first template will be used.
 
