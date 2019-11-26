@@ -175,7 +175,8 @@ def edit(project: Optional[str], file_to_edit: str) -> None:
 @coloramafn
 def diff(project: Optional[str], file_to_diff: str) -> None:
     """
-    Diff a file against the template.
+    Diff a file against the template. If a project is not sent,
+    the first template is being used.
     """
     project_parameters = load_project_parameters()
 
@@ -186,7 +187,7 @@ def diff(project: Optional[str], file_to_diff: str) -> None:
         sys.exit(1)
 
     if not project:
-        project = project_parameters['NAME']
+        project = project_parameters['templates'][0]
 
     print(cyan("Diffing"),
           cyan(file_to_diff, bold=True),
@@ -253,7 +254,7 @@ def generate(ars, auto, keep, template, parameters):
     # with the new settings.
     project_parameters = loaded_project_parameters if loaded_project_parameters else dict()
 
-    # we convert the old projects into the new format
+    # we convert the old projects into the new format.
     if 'NAME' in project_parameters:
         project_parameters['templates'] = [project_parameters['NAME']]
         del project_parameters['NAME']
