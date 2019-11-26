@@ -1,17 +1,14 @@
-ars(onist)
-==========
-
-Poor man's yo for quick project generation.
+Poor man’s yo for quick project generation.
 
 Installation
-------------
+============
 
 .. code:: sh
 
     pip install arst
 
 Creating a new project
-----------------------
+======================
 
 Two shortcuts are installed: ``ars``, and ``arst``
 
@@ -46,25 +43,25 @@ Thus if you have a structure such as:
 After the ``ars project-type`` command you will have in your current
 folder:
 
-.. code:: text
+.. code:: sh
 
     .
     ├── package.json
     └── static
-        └── index.html
+        └── index.html
 
 The package.json file will be parsed as expected.
 
 If the file name from the project ends with ``.KEEP`` on subsequent
-calls from the same folder, it won't be overwritten.
+calls from the same folder, it won’t be overwritten.
 
 Parameters
-----------
+==========
 
 Parameters can be also passed to the templates themselves. In case a
 parameter does not have a value, ``true`` will be set instead.
 
-::
+.. code:: sh
 
     ars package-type name1=value name2 name3=3
 
@@ -74,7 +71,7 @@ parameters sent into the handlebars template:
 .. code:: json
 
     {
-        "NAME" : "package-type",
+        "templates" : ["package-type"],
         "name1" : "value",
         "name2" : true,
         "name3" : "3",
@@ -97,7 +94,7 @@ If in our project we have: ``{{arg0}}.html.hbs`` and
 ``User.js``.
 
 Configuration
--------------
+=============
 
 If you store your project files into a different folder, you can use the
 ``ARS_PROJECTS_FOLDER`` environment variable to point to the absolute
