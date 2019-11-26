@@ -96,7 +96,8 @@ def version():
 @coloramafn
 def push(*, project, files_to_push):
     """
-    Push a file into the template
+    Push a file into the template. If a template is not passed, the first template
+    is used.
     """
     if not project:
         project_parameters = load_project_parameters()
@@ -107,7 +108,7 @@ def push(*, project, files_to_push):
                   red("file not found."))
             sys.exit(1)
 
-        project = project_parameters['NAME']
+        project = project_parameters['templates'][0]
 
     push_files_to_template(ARS_PROJECTS_FOLDER, project, files_to_push)
 
@@ -148,7 +149,8 @@ def pwd(project_name):
 @coloramafn
 def edit(project: Optional[str], file_to_edit: str) -> None:
     """
-    Edit a file from the project.
+    Edit a file from the project. If a template is not used, the first
+    template from the project is used.
     """
     project_parameters = load_project_parameters()
 
@@ -159,7 +161,7 @@ def edit(project: Optional[str], file_to_edit: str) -> None:
         sys.exit(1)
 
     if not project:
-        project = project_parameters['NAME']
+        project = project_parameters['templates'][0]
 
     edit_file_from_project(ARS_PROJECTS_FOLDER,
                            project,

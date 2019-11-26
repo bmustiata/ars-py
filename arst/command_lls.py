@@ -28,11 +28,22 @@ def process_folder(current_path: str,
 def list_folder_in_project(projects_folder: str,
                            folder_to_list: str,
                            loaded_project_parameters: Optional[Dict[str, str]]) -> None:
+    # While it's possible to have multiple templates in the project, when listing the
+    # current folder, only the first template will be used.
+
     if not loaded_project_parameters:
         print(red("Unable to find a project. .ars file is missing."))
         sys.exit(1)
 
-    project_name = loaded_project_parameters["NAME"]
+    if "templates" not in loaded_project_parameters:
+        print(red("The .ars file doesn't contain any templates."))
+        sys.exit(2)
+
+    if not loaded_project_parameters["templates"]:
+        print(red("The .ars file templates section is empty."))
+        sys.exit(3)
+
+    project_name = loaded_project_parameters["templates"][0]
 
     project_definition: ProjectDefinition = read_project_definition(projects_folder, project_name)
     path_mappings: Dict[str, FileEntry] = dict()
