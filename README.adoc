@@ -1,0 +1,10 @@
+# arst
+
+arst program.
+
+## Installation
+
+```sh
+pip install arst
+```
+

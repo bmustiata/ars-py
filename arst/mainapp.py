@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar
+from typing import Callable, TypeVar, Union, List
 
 import functools
 import click
@@ -209,7 +209,7 @@ def lls(folder_to_list: str) -> None:
                            load_project_parameters())
 
 
-def load_project_parameters() -> Optional[Dict[str, str]]:
+def load_project_parameters() -> Optional[Dict[str, Union[str, List[str]]]]:
     loaded_project_parameters: Optional[Dict[str, str]] = None
 
     if os.path.isfile(".ars"):
@@ -251,8 +251,15 @@ def generate(ars, auto, keep, template, parameters):
     # with the new settings.
     project_parameters = loaded_project_parameters if loaded_project_parameters else dict()
 
+    # we convert the old projects into the new format
+    if 'NAME' in project_parameters:
+        project_parameters['templates'] = [project_parameters['NAME']]
+        del project_parameters['NAME']
+
+    if project_parameters and template and template not in project_parameters:
+        project_parameters['templates'].append(template)
     if template:
-        project_parameters['NAME'] = template
+        project_parameters['templates'] = [template]
 
     # we iterate the rest of the parameters, and augument the projectParameters
     for i in range(len(parameters)):
@@ -263,25 +270,24 @@ def generate(ars, auto, keep, template, parameters):
         project_parameters[param_name] = param_value
         project_parameters[f"arg{i}"] = parameters[i]
 
-    project_name = project_parameters["NAME"]
+    for project_name in project_parameters["templates"]:
+        project_definition: ProjectDefinition = read_project_definition(ARS_PROJECTS_FOLDER, project_name)
 
-    project_definition: ProjectDefinition = read_project_definition(ARS_PROJECTS_FOLDER, project_name)
+        # Generate the actual project.
+        print(cyan("Generating"),
+              cyan(project_name, bold=True),
+              cyan("with"),
+              cyan(str(project_parameters), bold=True))
 
-    # Generate the actual project.
-    print(cyan("Generating"),
-          cyan(project_name, bold=True),
-          cyan("with"),
-          cyan(str(project_parameters), bold=True))
+        if project_definition.generate_ars and ars:
+            with open(".ars", "w", encoding='utf8') as json_file:
+                yaml.safe_dump(project_parameters, json_file)
 
-    if project_definition.generate_ars and ars:
-        with open(".ars", "w", encoding='utf8') as json_file:
-            yaml.safe_dump(project_parameters, json_file)
-
-    process_folder(".",
-                   project_definition.file_resolver(),
-                   project_parameters,
-                   auto_resolve_conflicts=auto,
-                   keep_current_files_on_conflict=keep)
+        process_folder(".",
+                       project_definition.file_resolver(),
+                       project_parameters,
+                       auto_resolve_conflicts=auto,
+                       keep_current_files_on_conflict=keep)
 
 
 def process_folder(current_path: str,

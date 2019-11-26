@@ -6,5 +6,5 @@ version:
 requirements:
   version: $(bin/requires_versions.py)
   files:
-    setup.py: (install_requires=\[)(.*?)(],)
+    setup.py: (install_requires=\[)(.*?)(\],)
 

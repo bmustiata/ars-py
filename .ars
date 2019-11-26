@@ -1,1 +1,4 @@
-{NAME: py3-exe, arg0: arst, arst: true}
+arg0: arst
+arst: true
+templates:
+- py3-exe
