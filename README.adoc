@@ -1,6 +1,6 @@
 = ars(onist)
 
-Poor man's yo for quick project generation.
+Quick project generation.
 
 == Installation
 
@@ -9,13 +9,14 @@ Poor man's yo for quick project generation.
 pip install arst
 -----------------------------------------------------------------------------
 
-## Creating a new project
+== Creating a new project
 
-Two shortcuts are installed: `ars`, and `arst`
+Two shortcuts are installed: `ars`, and `arst`. These keys are consecutive if
+you're using a Colemak keyboard layout.
 
 [source,sh]
 -----------------------------------------------------------------------------
-ars project-type
+ars generate project-type
 -----------------------------------------------------------------------------
 
 or if a project is already created, and we want to reaply the templates,
@@ -25,10 +26,10 @@ specified in the `ARS_DIFF_TOOL` or in case the variable is not defined
 
 [source,sh]
 -----------------------------------------------------------------------------
-arst project-type
+arst generate project-type
 -----------------------------------------------------------------------------
 
-This will copy all the resources from the `~/.projects/project-type`
+This copies all the resources from the `~/.projects/project-type`
 into the current folder. Files that have the `.hbs` extension will
 be used as templates, and copied with the extension removed.
 
@@ -66,7 +67,7 @@ Parameters can be also passed to the templates themselves. In case a parameter d
 
 [source,sh]
 -----------------------------------------------------------------------------
-ars package-type name1=value name2 name3=3
+ars generate package-type name1=value name2 name3=3
 -----------------------------------------------------------------------------
 
 This will generate a `package-type` project with the following parameters sent into the handlebars template:
@@ -85,18 +86,38 @@ This will generate a `package-type` project with the following parameters sent i
 -----------------------------------------------------------------------------
 
 Since the templating also happens to the file names themselves, so a file named
-`{{name1}}.txt` will be installed as `value.txt`.  This is particularily useful
+`{{name1}}.txt` will be installed as `value.txt`.  This is particularly useful
 in conjunction with the positional argument names, making possible scenarios
 such as:
 
 [source,sh]
 -----------------------------------------------------------------------------
-ars new-model User
+ars generate new-model User
 -----------------------------------------------------------------------------
 
 If in our project we have: `{{arg0}}.html.hbs` and `{{arg0}}.js.hbs`, they will
 be expanded as:
 `User.html` and `User.js`.
+
+== Extra Commands
+
+.Extra Commands
+[align="center",width="100%",options="header"]
+|============================================================================
+| Command   | Description
+
+| `diff`    | Diff a file against the template
+| `edit`    | Edit a file from the project
+| `generate`| Generate or update the project sources
+| `lls`     | List a folder from the project
+| `ls`      | List the project folder
+| `push`    | Push a file into the template
+| `pwd`     | Display the project location
+| `tree`    | Display the project tree
+| `version` | Print the current application version
+
+|============================================================================
+
 
 == Configuration
 

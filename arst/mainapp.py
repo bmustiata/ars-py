@@ -259,9 +259,9 @@ def generate(ars, auto, keep, template, parameters):
         project_parameters['templates'] = [project_parameters['NAME']]
         del project_parameters['NAME']
 
-    if project_parameters and template and template not in project_parameters:
+    if project_parameters and template and template not in project_parameters['templates']:
         project_parameters['templates'].append(template)
-    elif template and not project_parameters:
+    elif template and not project_parameters["templates"]:
         project_parameters['templates'] = [template]
 
     # we iterate the rest of the parameters, and augument the projectParameters
@@ -291,6 +291,13 @@ def generate(ars, auto, keep, template, parameters):
                        project_parameters,
                        auto_resolve_conflicts=auto,
                        keep_current_files_on_conflict=keep)
+
+        for command in project_definition.shell_commands:
+            print(cyan("Running"),
+                  cyan(command, bold=True))
+            template = pybars.Compiler().compile(command)
+            rendered_command = template(project_parameters)
+            os.system(rendered_command)
 
 
 def process_folder(current_path: str,

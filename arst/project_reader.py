@@ -7,7 +7,7 @@ import pybars
 
 from termcolor_util import red
 
-from .file_resolver import FileResolver
+from arst.file_resolver import FileResolver
 
 
 class ParsedFile(object):
@@ -28,6 +28,7 @@ class ProjectDefinition(object):
     projects_folder: str
     search_path: List[str]
     generate_ars: bool
+    shell_commands: List[str]
 
     def __init__(self,
                  projects_folder: str,
@@ -37,6 +38,7 @@ class ProjectDefinition(object):
         self.projects_folder = projects_folder
         self.search_path = [name]
         self.generate_ars = generate_ars
+        self.shell_commands: List[str] = []
 
     def file_resolver(self) -> FileResolver:
         return FileResolver(root_projects_folder=self.projects_folder,
@@ -102,5 +104,9 @@ def read_project_definition(projects_folder: str,
         for parent in settings["parents"]:
             parent_project = read_project_definition(projects_folder, parent)
             result.search_path.extend(parent_project.search_path)
+            result.shell_commands.extend(parent_project.shell_commands)
+
+    if "commands" in settings:
+        result.shell_commands.extend(settings["commands"])
 
     return result
