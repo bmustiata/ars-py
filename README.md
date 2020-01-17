@@ -1,4 +1,4 @@
-Poor man’s yo for quick project generation.
+Quick project generation.
 
 Installation
 ============
@@ -8,20 +8,21 @@ Installation
 Creating a new project
 ======================
 
-Two shortcuts are installed: `ars`, and `arst`
+Two shortcuts are installed: `ars`, and `arst`. These keys are
+consecutive if you’re using a Colemak keyboard layout.
 
-    ars project-type
+    ars generate project-type
 
 or if a project is already created, and we want to reaply the templates,
 but with a tree diff for all the conflicting files. This will use the
 program specified in the `ARS_DIFF_TOOL` or in case the variable is not
 defined `vimdiff`:
 
-    arst project-type
+    arst generate project-type
 
-This will copy all the resources from the `~/.projects/project-type`
-into the current folder. Files that have the `.hbs` extension will be
-used as templates, and copied with the extension removed.
+This copies all the resources from the `~/.projects/project-type` into
+the current folder. Files that have the `.hbs` extension will be used as
+templates, and copied with the extension removed.
 
 The project type is sent as `NAME` into the handlebars templates.
 
@@ -51,7 +52,7 @@ Parameters
 Parameters can be also passed to the templates themselves. In case a
 parameter does not have a value, `true` will be set instead.
 
-    ars package-type name1=value name2 name3=3
+    ars generate package-type name1=value name2 name3=3
 
 This will generate a `package-type` project with the following
 parameters sent into the handlebars template:
@@ -68,13 +69,68 @@ parameters sent into the handlebars template:
 
 Since the templating also happens to the file names themselves, so a
 file named `{{name1}}.txt` will be installed as `value.txt`. This is
-particularily useful in conjunction with the positional argument names,
+particularly useful in conjunction with the positional argument names,
 making possible scenarios such as:
 
-    ars new-model User
+    ars generate new-model User
 
 If in our project we have: `{{arg0}}.html.hbs` and `{{arg0}}.js.hbs`,
 they will be expanded as: `User.html` and `User.js`.
+
+Extra Commands
+==============
+
+<table>
+<caption>Extra Commands</caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><p><code>diff</code></p></td>
+<td><p>Diff a file against the template</p></td>
+</tr>
+<tr class="even">
+<td><p><code>edit</code></p></td>
+<td><p>Edit a file from the project</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>generate</code></p></td>
+<td><p>Generate or update the project sources</p></td>
+</tr>
+<tr class="even">
+<td><p><code>lls</code></p></td>
+<td><p>List a folder from the project</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>ls</code></p></td>
+<td><p>List the project folder</p></td>
+</tr>
+<tr class="even">
+<td><p><code>push</code></p></td>
+<td><p>Push a file into the template</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>pwd</code></p></td>
+<td><p>Display the project location</p></td>
+</tr>
+<tr class="even">
+<td><p><code>tree</code></p></td>
+<td><p>Display the project tree</p></td>
+</tr>
+<tr class="odd">
+<td><p><code>version</code></p></td>
+<td><p>Print the current application version</p></td>
+</tr>
+</tbody>
+</table>
 
 Configuration
 =============

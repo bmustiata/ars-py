@@ -1,4 +1,4 @@
-Poor man’s yo for quick project generation.
+Quick project generation.
 
 Installation
 ============
@@ -10,11 +10,12 @@ Installation
 Creating a new project
 ======================
 
-Two shortcuts are installed: ``ars``, and ``arst``
+Two shortcuts are installed: ``ars``, and ``arst``. These keys are
+consecutive if you’re using a Colemak keyboard layout.
 
 .. code:: sh
 
-    ars project-type
+    ars generate project-type
 
 or if a project is already created, and we want to reaply the templates,
 but with a tree diff for all the conflicting files. This will use the
@@ -23,11 +24,11 @@ not defined ``vimdiff``:
 
 .. code:: sh
 
-    arst project-type
+    arst generate project-type
 
-This will copy all the resources from the ``~/.projects/project-type``
-into the current folder. Files that have the ``.hbs`` extension will be
-used as templates, and copied with the extension removed.
+This copies all the resources from the ``~/.projects/project-type`` into
+the current folder. Files that have the ``.hbs`` extension will be used
+as templates, and copied with the extension removed.
 
 The project type is sent as ``NAME`` into the handlebars templates.
 
@@ -63,7 +64,7 @@ parameter does not have a value, ``true`` will be set instead.
 
 .. code:: sh
 
-    ars package-type name1=value name2 name3=3
+    ars generate package-type name1=value name2 name3=3
 
 This will generate a ``package-type`` project with the following
 parameters sent into the handlebars template:
@@ -82,16 +83,45 @@ parameters sent into the handlebars template:
 
 Since the templating also happens to the file names themselves, so a
 file named ``{{name1}}.txt`` will be installed as ``value.txt``. This is
-particularily useful in conjunction with the positional argument names,
+particularly useful in conjunction with the positional argument names,
 making possible scenarios such as:
 
 .. code:: sh
 
-    ars new-model User
+    ars generate new-model User
 
 If in our project we have: ``{{arg0}}.html.hbs`` and
 ``{{arg0}}.js.hbs``, they will be expanded as: ``User.html`` and
 ``User.js``.
+
+Extra Commands
+==============
+
++--------------------------------------+--------------------------------------+
+| Command                              | Description                          |
++======================================+======================================+
+| ``diff``                             | Diff a file against the template     |
++--------------------------------------+--------------------------------------+
+| ``edit``                             | Edit a file from the project         |
++--------------------------------------+--------------------------------------+
+| ``generate``                         | Generate or update the project       |
+|                                      | sources                              |
++--------------------------------------+--------------------------------------+
+| ``lls``                              | List a folder from the project       |
++--------------------------------------+--------------------------------------+
+| ``ls``                               | List the project folder              |
++--------------------------------------+--------------------------------------+
+| ``push``                             | Push a file into the template        |
++--------------------------------------+--------------------------------------+
+| ``pwd``                              | Display the project location         |
++--------------------------------------+--------------------------------------+
+| ``tree``                             | Display the project tree             |
++--------------------------------------+--------------------------------------+
+| ``version``                          | Print the current application        |
+|                                      | version                              |
++--------------------------------------+--------------------------------------+
+
+Table: Extra Commands
 
 Configuration
 =============
