@@ -30,4 +30,5 @@ def recursively_push_file(projects_folder: str,
                                   file_name=os.path.join(file_name, nested_file_name))
         return
 
+    pathlib.Path(target_file_name).parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(file_name, target_file_name)

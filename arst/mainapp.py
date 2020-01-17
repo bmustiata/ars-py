@@ -261,7 +261,7 @@ def generate(ars, auto, keep, template, parameters):
 
     if project_parameters and template and template not in project_parameters:
         project_parameters['templates'].append(template)
-    elif template:
+    elif template and not project_parameters:
         project_parameters['templates'] = [template]
 
     # we iterate the rest of the parameters, and augument the projectParameters
