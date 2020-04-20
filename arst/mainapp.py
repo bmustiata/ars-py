@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar, Union, List
+from typing import Callable, TypeVar, Union, List, cast
 
 import functools
 import click
@@ -196,7 +196,7 @@ def diff(file_to_diff: str) -> None:
 
     diff_file_from_project(
         ARS_PROJECTS_FOLDER,
-        project_parameters["templates"],
+        cast(List[str], project_parameters["templates"]),
         file_to_diff,
         project_parameters,
     )
