@@ -170,10 +170,9 @@ def edit(project: Optional[str], file_to_edit: str) -> None:
 
 
 @main.command()
-@click.option('--project', required=False)
 @click.argument('file_to_diff')
 @coloramafn
-def diff(project: Optional[str], file_to_diff: str) -> None:
+def diff(file_to_diff: str) -> None:
     """
     Diff a file against the template. If a project is not sent,
     the first template is being used.
@@ -186,16 +185,8 @@ def diff(project: Optional[str], file_to_diff: str) -> None:
               red("file not found."))
         sys.exit(1)
 
-    if not project:
-        project = project_parameters['templates'][0]
-
-    print(cyan("Diffing"),
-          cyan(file_to_diff, bold=True),
-          cyan("against project"),
-          cyan(project, bold=True))
-
     diff_file_from_project(ARS_PROJECTS_FOLDER,
-                           project,
+                           project_parameters["templates"],
                            file_to_diff,
                            project_parameters)
 
