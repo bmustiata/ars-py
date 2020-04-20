@@ -18,7 +18,12 @@ import time
 from termcolor_util import cyan, red, yellow
 
 from arst.file_resolver import FileResolver, is_first_file_newer
-from arst.project_reader import ProjectDefinition, read_project_definition, ParsedFile, parse_file_name
+from arst.project_reader import (
+    ProjectDefinition,
+    read_project_definition,
+    ParsedFile,
+    parse_file_name,
+)
 
 from arst.command_push import push_files_to_template
 from arst.command_tree import display_project_tree
@@ -28,16 +33,18 @@ from arst.command_pwd import display_project_location
 from arst.command_edit import edit_file_from_project
 from arst.command_diff import diff_file_from_project
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
-ARS_PROJECTS_FOLDER: str = os.environ["ARS_PROJECTS_FOLDER"]\
-    if "ARS_PROJECTS_FOLDER" in os.environ\
-    else os.path.join(os.environ["HOME"], ".projects")
+ARS_PROJECTS_FOLDER: str = os.environ[
+    "ARS_PROJECTS_FOLDER"
+] if "ARS_PROJECTS_FOLDER" in os.environ else os.path.join(
+    os.environ["HOME"], ".projects"
+)
 
-ARS_DIFF_TOOL: str = os.environ["ARS_DIFF_TOOL"]\
-    if "ARS_DIFF_TOOL" in os.environ\
-    else os.path.join("vimdiff")
+ARS_DIFF_TOOL: str = os.environ[
+    "ARS_DIFF_TOOL"
+] if "ARS_DIFF_TOOL" in os.environ else os.path.join("vimdiff")
 
 
 PARAM_RE = re.compile("^(.*?)(=(.*))?$")
@@ -79,20 +86,27 @@ def version():
     """
     Print the current application version
     """
-    print(cyan(dedent(r"""\
+    print(
+        cyan(
+            dedent(
+                r"""\
                                 _     _
       __ _ _ __ ___  ___  _ __ (_)___| |_
      / _` | '__/ __|/ _ \| '_ \| / __| __|
     | (_| | |  \__ \ (_) | | | | \__ \ |_
      \__,_|_|  |___/\___/|_| |_|_|___/\__|
                            version: 1.0.21
-    """), bold=True))
+    """
+            ),
+            bold=True,
+        )
+    )
     sys.exit(0)
 
 
 @main.command()
-@click.option('--project', required=False)
-@click.argument('files_to_push', nargs=-1)
+@click.option("--project", required=False)
+@click.argument("files_to_push", nargs=-1)
 @coloramafn
 def push(*, project, files_to_push):
     """
@@ -103,18 +117,18 @@ def push(*, project, files_to_push):
         project_parameters = load_project_parameters()
 
         if not project_parameters:
-            print(red("Not in a project."),
-                  red(".ars", bold=True),
-                  red("file not found."))
+            print(
+                red("Not in a project."), red(".ars", bold=True), red("file not found.")
+            )
             sys.exit(1)
 
-        project = project_parameters['templates'][0]
+        project = project_parameters["templates"][0]
 
     push_files_to_template(ARS_PROJECTS_FOLDER, project, files_to_push)
 
 
 @main.command()
-@click.argument('project_name')
+@click.argument("project_name")
 @coloramafn
 def tree(project_name):
     """
@@ -124,7 +138,7 @@ def tree(project_name):
 
 
 @main.command()
-@click.argument('project_folder', required=False)
+@click.argument("project_folder", required=False)
 @coloramafn
 def ls(project_folder):
     """
@@ -134,7 +148,7 @@ def ls(project_folder):
 
 
 @main.command()
-@click.argument('project_name')
+@click.argument("project_name")
 @coloramafn
 def pwd(project_name):
     """
@@ -144,8 +158,8 @@ def pwd(project_name):
 
 
 @main.command()
-@click.option('--project', required=False)
-@click.argument('file_to_edit')
+@click.option("--project", required=False)
+@click.argument("file_to_edit")
 @coloramafn
 def edit(project: Optional[str], file_to_edit: str) -> None:
     """
@@ -155,22 +169,19 @@ def edit(project: Optional[str], file_to_edit: str) -> None:
     project_parameters = load_project_parameters()
 
     if not project_parameters:
-        print(red("Not in a project."),
-              red(".ars", bold=True),
-              red("file not found."))
+        print(red("Not in a project."), red(".ars", bold=True), red("file not found."))
         sys.exit(1)
 
     if not project:
-        project = project_parameters['templates'][0]
+        project = project_parameters["templates"][0]
 
-    edit_file_from_project(ARS_PROJECTS_FOLDER,
-                           project,
-                           file_to_edit,
-                           load_project_parameters())
+    edit_file_from_project(
+        ARS_PROJECTS_FOLDER, project, file_to_edit, load_project_parameters()
+    )
 
 
 @main.command()
-@click.argument('file_to_diff')
+@click.argument("file_to_diff")
 @coloramafn
 def diff(file_to_diff: str) -> None:
     """
@@ -180,49 +191,51 @@ def diff(file_to_diff: str) -> None:
     project_parameters = load_project_parameters()
 
     if not project_parameters:
-        print(red("Not in a project."),
-              red(".ars", bold=True),
-              red("file not found."))
+        print(red("Not in a project."), red(".ars", bold=True), red("file not found."))
         sys.exit(1)
 
-    diff_file_from_project(ARS_PROJECTS_FOLDER,
-                           project_parameters["templates"],
-                           file_to_diff,
-                           project_parameters)
+    diff_file_from_project(
+        ARS_PROJECTS_FOLDER,
+        project_parameters["templates"],
+        file_to_diff,
+        project_parameters,
+    )
 
 
 @main.command()
-@click.argument('folder_to_list', default=".")
+@click.argument("folder_to_list", default=".")
 @coloramafn
 def lls(folder_to_list: str) -> None:
     """
     List a folder from the project
     """
-    list_folder_in_project(ARS_PROJECTS_FOLDER,
-                           folder_to_list,
-                           load_project_parameters())
+    list_folder_in_project(
+        ARS_PROJECTS_FOLDER, folder_to_list, load_project_parameters()
+    )
 
 
 def load_project_parameters() -> Optional[Dict[str, Union[str, List[str]]]]:
     loaded_project_parameters: Optional[Dict[str, Union[str, List[str]]]] = None
 
     if os.path.isfile(".ars"):
-        with open(".ars", "r", encoding='utf8') as f:
+        with open(".ars", "r", encoding="utf8") as f:
             loaded_project_parameters = yaml.safe_load(f)
-            print(cyan("Using already existing"),
-                  cyan("'.ars'", bold=True),
-                  cyan("file settings:"),
-                  cyan(str(loaded_project_parameters), bold=True))
+            print(
+                cyan("Using already existing"),
+                cyan("'.ars'", bold=True),
+                cyan("file settings:"),
+                cyan(str(loaded_project_parameters), bold=True),
+            )
 
     return loaded_project_parameters
 
 
 @main.command()
-@click.option('--ars/--no-ars', default=True)
-@click.option('--auto', required=False)
-@click.option('--keep', required=False)
-@click.argument('template', required=False)
-@click.argument('parameters', nargs=-1)
+@click.option("--ars/--no-ars", default=True)
+@click.option("--auto", required=False)
+@click.option("--keep", required=False)
+@click.argument("template", required=False)
+@click.argument("parameters", nargs=-1)
 @coloramafn
 def generate(ars, auto, keep, template, parameters):
     """
@@ -243,17 +256,23 @@ def generate(ars, auto, keep, template, parameters):
 
     # if we have arguments, we need to either create, or augument the projectParameters
     # with the new settings.
-    project_parameters = loaded_project_parameters if loaded_project_parameters else dict()
+    project_parameters = (
+        loaded_project_parameters if loaded_project_parameters else dict()
+    )
 
     # we convert the old projects into the new format.
-    if 'NAME' in project_parameters:
-        project_parameters['templates'] = [project_parameters['NAME']]
-        del project_parameters['NAME']
+    if "NAME" in project_parameters:
+        project_parameters["templates"] = [project_parameters["NAME"]]
+        del project_parameters["NAME"]
 
-    if project_parameters and template and template not in project_parameters['templates']:
-        project_parameters['templates'].append(template)
-    elif template and 'templates' not in project_parameters:
-        project_parameters['templates'] = [template]
+    if (
+        project_parameters
+        and template
+        and template not in project_parameters["templates"]
+    ):
+        project_parameters["templates"].append(template)
+    elif template and "templates" not in project_parameters:
+        project_parameters["templates"] = [template]
 
     # we iterate the rest of the parameters, and augument the projectParameters
     for i in range(len(parameters)):
@@ -265,37 +284,44 @@ def generate(ars, auto, keep, template, parameters):
         project_parameters[f"arg{i}"] = parameters[i]
 
     for project_name in project_parameters["templates"]:
-        project_definition: ProjectDefinition = read_project_definition(ARS_PROJECTS_FOLDER, project_name)
+        project_definition: ProjectDefinition = read_project_definition(
+            ARS_PROJECTS_FOLDER, project_name
+        )
 
         # Generate the actual project.
-        print(cyan("Generating"),
-              cyan(project_name, bold=True),
-              cyan("with"),
-              cyan(str(project_parameters), bold=True))
+        print(
+            cyan("Generating"),
+            cyan(project_name, bold=True),
+            cyan("with"),
+            cyan(str(project_parameters), bold=True),
+        )
 
         if project_definition.generate_ars and ars:
-            with open(".ars", "w", encoding='utf8') as json_file:
+            with open(".ars", "w", encoding="utf8") as json_file:
                 yaml.safe_dump(project_parameters, json_file)
 
-        process_folder(".",
-                       project_definition.file_resolver(),
-                       project_parameters,
-                       auto_resolve_conflicts=auto,
-                       keep_current_files_on_conflict=keep)
+        process_folder(
+            ".",
+            project_definition.file_resolver(),
+            project_parameters,
+            auto_resolve_conflicts=auto,
+            keep_current_files_on_conflict=keep,
+        )
 
         for command in project_definition.shell_commands:
-            print(cyan("Running"),
-                  cyan(command, bold=True))
+            print(cyan("Running"), cyan(command, bold=True))
             template = pybars.Compiler().compile(command)
             rendered_command = template(project_parameters)
             os.system(rendered_command)
 
 
-def process_folder(current_path: str,
-                   file_resolver: FileResolver,
-                   project_parameters: Dict[str, Union[str, List[str]]],
-                   auto_resolve_conflicts: bool,
-                   keep_current_files_on_conflict: bool) -> None:
+def process_folder(
+    current_path: str,
+    file_resolver: FileResolver,
+    project_parameters: Dict[str, Union[str, List[str]]],
+    auto_resolve_conflicts: bool,
+    keep_current_files_on_conflict: bool,
+) -> None:
     """
     Recursively process the handlebars templates for the given project.
     """
@@ -306,64 +332,70 @@ def process_folder(current_path: str,
         full_file_path = file_entry.absolute_path
 
         if file_entry.name == "HELP.md" or file_entry.name == ".ars":
-            print(cyan("Ignoring file        :"),
-                  cyan(file_entry.name, bold=True))
+            print(cyan("Ignoring file        :"), cyan(file_entry.name, bold=True))
             continue
 
         if file_entry.is_dir:
             if os.path.isdir(full_local_path):
-                print(cyan("Already exists folder:"),
-                      cyan(full_local_path, bold=True))
+                print(cyan("Already exists folder:"), cyan(full_local_path, bold=True))
             else:
-                print(yellow("Creating folder      :"),
-                      yellow(full_local_path, bold=True))
+                print(
+                    yellow("Creating folder      :"), yellow(full_local_path, bold=True)
+                )
                 os.makedirs(full_local_path)
 
-            process_folder(full_local_path,
-                           file_resolver.subentry(file_entry),
-                           project_parameters,
-                           auto_resolve_conflicts,
-                           keep_current_files_on_conflict)
+            process_folder(
+                full_local_path,
+                file_resolver.subentry(file_entry),
+                project_parameters,
+                auto_resolve_conflicts,
+                keep_current_files_on_conflict,
+            )
             continue
 
         if file.keep_existing and os.path.isfile(full_local_path):
-            print(cyan("Keeping regular file :"),
-                  cyan(full_local_path, bold=True))
+            print(cyan("Keeping regular file :"), cyan(full_local_path, bold=True))
             continue
 
         if not file.hbs_template:
             if not os.path.isfile(full_local_path):
-                print(yellow("Copying regular file :"),
-                      yellow(full_local_path, bold=True))
+                print(
+                    yellow("Copying regular file :"), yellow(full_local_path, bold=True)
+                )
                 shutil.copy(full_file_path, full_local_path)
                 continue
 
             if filecmp.cmp(full_file_path, full_local_path):
-                print(cyan("No update needed     :"),
-                      cyan(full_local_path, bold=True))
+                print(cyan("No update needed     :"), cyan(full_local_path, bold=True))
                 continue
 
             if is_first_file_newer(full_local_path, full_file_path):
-                print(cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
-                      cyan(full_local_path, bold=True))
+                print(
+                    cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
+                    cyan(full_local_path, bold=True),
+                )
                 continue
 
             # we  have  a conflict.
             if auto_resolve_conflicts:
-                print(red("Conflict"),
-                      red("auto", bold=True),
-                      red("       :"),
-                      red(full_local_path, bold=True))
+                print(
+                    red("Conflict"),
+                    red("auto", bold=True),
+                    red("       :"),
+                    red(full_local_path, bold=True),
+                )
 
                 shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
 
                 continue
 
             if keep_current_files_on_conflict:
-                print(red("Conflict"),
-                      red("keep", bold=True),
-                      red("       :"),
-                      red(full_local_path, bold=True))
+                print(
+                    red("Conflict"),
+                    red("keep", bold=True),
+                    red("       :"),
+                    red(full_local_path, bold=True),
+                )
 
                 os.utime(full_local_path, (now(), now()))
 
@@ -376,54 +408,57 @@ def process_folder(current_path: str,
             # if 'linux' in sys.platform:
             execute_diff(full_local_path, full_local_path_orig)
 
-            print(red("Conflict resolved    :"),
-                  red(full_local_path, bold=True))
+            print(red("Conflict resolved    :"), red(full_local_path, bold=True))
             continue
 
-        with open(full_file_path, "r", encoding='utf8') as template_file:
+        with open(full_file_path, "r", encoding="utf8") as template_file:
             template_content = template_file.read()
 
         template = pybars.Compiler().compile(template_content)
         content = template(project_parameters)
 
         if not os.path.isfile(full_local_path):
-            print(yellow("Parsing HBS template :"),
-                  yellow(full_local_path, bold=True))
+            print(yellow("Parsing HBS template :"), yellow(full_local_path, bold=True))
 
-            with open(full_local_path, "w", encoding='utf8') as content_file:
+            with open(full_local_path, "w", encoding="utf8") as content_file:
                 content_file.write(content)
 
             shutil.copystat(full_file_path, full_local_path)
 
             continue
 
-        if content == open(full_local_path, "r", encoding='utf8').read():
-            print(cyan("No update needed     :"),
-                  cyan(full_local_path, bold=True))
+        if content == open(full_local_path, "r", encoding="utf8").read():
+            print(cyan("No update needed     :"), cyan(full_local_path, bold=True))
             continue
 
         if is_first_file_newer(full_local_path, full_file_path):
-            print(cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
-                  cyan(full_local_path, bold=True))
+            print(
+                cyan("No update needed ") + cyan("date", bold=True) + cyan(":"),
+                cyan(full_local_path, bold=True),
+            )
             continue
 
         # we  have  a conflict.
         if auto_resolve_conflicts:
-            print(red("Conflict"),
-                  red("auto", bold=True),
-                  red("HBS    :"),
-                  red(full_local_path, bold=True))
+            print(
+                red("Conflict"),
+                red("auto", bold=True),
+                red("HBS    :"),
+                red(full_local_path, bold=True),
+            )
 
-            with open(full_local_path, "w", encoding='utf8') as content_file:
+            with open(full_local_path, "w", encoding="utf8") as content_file:
                 content_file.write(content)
 
             continue
 
         if keep_current_files_on_conflict:
-            print(red("Conflict"),
-                  red("auto", bold=True),
-                  red("HBS    :"),
-                  red(full_local_path, bold=True))
+            print(
+                red("Conflict"),
+                red("auto", bold=True),
+                red("HBS    :"),
+                red(full_local_path, bold=True),
+            )
 
             os.utime(full_local_path, (now(), now()))
 
@@ -432,15 +467,14 @@ def process_folder(current_path: str,
         # we have a conflict
         full_local_path_orig = full_local_path + ".orig"
         shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
-        with open(full_local_path, "w", encoding='utf8') as content_file:
+        with open(full_local_path, "w", encoding="utf8") as content_file:
             content_file.write(content)
 
         # if 'linux' in sys.platform:
         execute_diff(full_local_path, full_local_path_orig)
 
-        print(red("Conflict resolved HBS:"),
-              red(full_local_path, bold=True))
+        print(red("Conflict resolved HBS:"), red(full_local_path, bold=True))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -30,10 +30,9 @@ class ProjectDefinition(object):
     generate_ars: bool
     shell_commands: List[str]
 
-    def __init__(self,
-                 projects_folder: str,
-                 name: str,
-                 generate_ars: bool = True) -> None:
+    def __init__(
+        self, projects_folder: str, name: str, generate_ars: bool = True
+    ) -> None:
         self.name = name
         self.projects_folder = projects_folder
         self.search_path = [name]
@@ -41,11 +40,14 @@ class ProjectDefinition(object):
         self.shell_commands: List[str] = []
 
     def file_resolver(self) -> FileResolver:
-        return FileResolver(root_projects_folder=self.projects_folder,
-                            search_path=self.search_path)
+        return FileResolver(
+            root_projects_folder=self.projects_folder, search_path=self.search_path
+        )
 
 
-def parse_file_name(file_name: str, project_parameters: Dict[str, Union[str, List[str]]]) -> ParsedFile:
+def parse_file_name(
+    file_name: str, project_parameters: Dict[str, Union[str, List[str]]]
+) -> ParsedFile:
     """
     parseFileName - Parse the fie name
     :param file_name: string with filename
@@ -56,45 +58,47 @@ def parse_file_name(file_name: str, project_parameters: Dict[str, Union[str, Lis
 
     name: str = file_name
 
-    if name.endswith('.KEEP'):
+    if name.endswith(".KEEP"):
         result.keep_existing = True
-        name = name[0: -len(".KEEP")]
+        name = name[0 : -len(".KEEP")]
 
     if name.endswith(".hbs"):
         result.hbs_template = True
-        name = name[0: -len(".hbs")]
+        name = name[0 : -len(".hbs")]
 
     result.name = pybars.Compiler().compile(name)(project_parameters)
 
     return result
 
 
-def read_project_definition(projects_folder: str,
-                            project_name: str) -> ProjectDefinition:
+def read_project_definition(
+    projects_folder: str, project_name: str
+) -> ProjectDefinition:
     full_project_path = os.path.join(projects_folder, project_name)
 
     # Simple sanity check to see if there is a project there, instead
     # of reporting an error.
     if not os.path.isdir(full_project_path):
-        print(red("Folder"),
-              red(f"'{full_project_path}'", bold=True),
-              red("does not exist, or is not a folder."))
+        print(
+            red("Folder"),
+            red(f"'{full_project_path}'", bold=True),
+            red("does not exist, or is not a folder."),
+        )
         sys.exit(1)
 
     help_file_name = os.path.join(projects_folder, project_name, "HELP.md")
     if os.path.isfile(help_file_name):
-        with open(help_file_name, encoding='utf-8') as help_file:
+        with open(help_file_name, encoding="utf-8") as help_file:
             mdvl.render(help_file.read(), cols=80)
 
-    result = ProjectDefinition(name=project_name,
-                               projects_folder=projects_folder)
+    result = ProjectDefinition(name=project_name, projects_folder=projects_folder)
 
-    template_settings_path = os.path.join(full_project_path, '.ars')
+    template_settings_path = os.path.join(full_project_path, ".ars")
 
     if not os.path.isfile(template_settings_path):
         return result
 
-    with open(template_settings_path, encoding='utf-8') as template_settings_content:
+    with open(template_settings_path, encoding="utf-8") as template_settings_content:
         settings = yaml.safe_load(template_settings_content.read())
 
     if "noars" in settings and settings["noars"]:
