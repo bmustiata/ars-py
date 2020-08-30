@@ -359,10 +359,16 @@ def process_folder(
 
         if not file.hbs_template:
             if not os.path.isfile(full_local_path):
-                print(
-                    yellow("Copying regular file :"), yellow(full_local_path, bold=True)
-                )
-                shutil.copy(full_file_path, full_local_path)
+                if os.path.islink(full_file_path):
+                    print(
+                        yellow("Linking regular file :"), yellow(full_local_path, bold=True)
+                    )
+                else:
+                    print(
+                        yellow("Copying regular file :"), yellow(full_local_path, bold=True)
+                    )
+
+                copy_or_link(full_file_path, full_local_path)
                 continue
 
             if filecmp.cmp(full_file_path, full_local_path):
@@ -385,7 +391,7 @@ def process_folder(
                     red(full_local_path, bold=True),
                 )
 
-                shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
+                copy_or_link(full_file_path, full_local_path)
 
                 continue
 
@@ -403,13 +409,18 @@ def process_folder(
 
             full_local_path_orig = full_local_path + ".orig"
             shutil.copy(full_local_path, full_local_path_orig, follow_symlinks=True)
-            shutil.copy(full_file_path, full_local_path, follow_symlinks=True)
+            copy_or_link(full_file_path, full_local_path)
 
             # if 'linux' in sys.platform:
             execute_diff(full_local_path, full_local_path_orig)
 
             print(red("Conflict resolved    :"), red(full_local_path, bold=True))
             continue
+
+        if os.path.islink(full_file_path):
+            print(red("FATAL ERROR", bold=True))
+            print(red("Template link found  :"), red(full_file_path, bold=True))
+            sys.exit(1)
 
         with open(full_file_path, "r", encoding="utf8") as template_file:
             template_content = template_file.read()
@@ -474,6 +485,22 @@ def process_folder(
         execute_diff(full_local_path, full_local_path_orig)
 
         print(red("Conflict resolved HBS:"), red(full_local_path, bold=True))
+
+
+def copy_or_link(source: str,
+                 target: str) -> None:
+    if os.path.islink(source):
+        # if the source is a link, we need to create a link pointing
+        # to a relative path that matches.
+        relative_link = os.readlink(source)
+
+        if os.path.isabs(relative_link):
+            relative_link = os.path.relpath(relative_link, source)
+
+        os.symlink(relative_link, target)
+        return
+
+    shutil.copy(source, target)
 
 
 if __name__ == "__main__":
