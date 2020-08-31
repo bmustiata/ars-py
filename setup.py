@@ -8,7 +8,7 @@ packages = find_packages()
 
 setup(
     name="arst",
-    version="0.1.master",
+    version="1.3.0",
     description="Poor man's yo generator.",
     long_description=readme,
     author="Bogdan Mustiata",
@@ -17,12 +17,15 @@ setup(
     entry_points={"console_scripts": ["arst = arst.mainapp:main"]},
     install_requires=[
         "pybars3 >=0.9.3, < 0.10",
-        "termcolor_util >=1.0.1, < 1.1",
-        "colorama >=0.3.7, <0.4",
-        "mdvl >=2017.7.16.7, <2017.8",
-        "PyYAML >=5.1, <5.2",
-        "click==7.0",
+        "termcolor_util >= 1.2.0, <2.0",
+        "colorama >= 0.4.3",
+        "mdvl >=2017.7.16.7",
+        "PyYAML == 5.1.2",
+        "click >= 7.0, <8.0"
     ],
     packages=packages,
-    package_data={"": ["*.txt", "*.rst"], "arst": ["py.typed"],},
+    package_data={
+        "": ["*.txt", "*.rst"],
+        "arst": ["py.typed"],
+    },
 )

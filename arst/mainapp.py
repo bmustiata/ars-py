@@ -36,15 +36,17 @@ from arst.command_diff import diff_file_from_project
 T = TypeVar("T")
 
 
-ARS_PROJECTS_FOLDER: str = os.environ[
-    "ARS_PROJECTS_FOLDER"
-] if "ARS_PROJECTS_FOLDER" in os.environ else os.path.join(
-    os.environ["HOME"], ".projects"
+ARS_PROJECTS_FOLDER: str = (
+    os.environ["ARS_PROJECTS_FOLDER"]
+    if "ARS_PROJECTS_FOLDER" in os.environ
+    else os.path.join(os.environ["HOME"], ".projects")
 )
 
-ARS_DIFF_TOOL: str = os.environ[
-    "ARS_DIFF_TOOL"
-] if "ARS_DIFF_TOOL" in os.environ else os.path.join("vimdiff")
+ARS_DIFF_TOOL: str = (
+    os.environ["ARS_DIFF_TOOL"]
+    if "ARS_DIFF_TOOL" in os.environ
+    else os.path.join("vimdiff")
+)
 
 
 PARAM_RE = re.compile("^(.*?)(=(.*))?$")
@@ -95,7 +97,7 @@ def version():
      / _` | '__/ __|/ _ \| '_ \| / __| __|
     | (_| | |  \__ \ (_) | | | | \__ \ |_
      \__,_|_|  |___/\___/|_| |_|_|___/\__|
-                           version: 0.1.master
+                           version: 1.3.0
     """
             ),
             bold=True,
@@ -361,11 +363,13 @@ def process_folder(
             if not os.path.isfile(full_local_path):
                 if os.path.islink(full_file_path):
                     print(
-                        yellow("Linking regular file :"), yellow(full_local_path, bold=True)
+                        yellow("Linking regular file :"),
+                        yellow(full_local_path, bold=True),
                     )
                 else:
                     print(
-                        yellow("Copying regular file :"), yellow(full_local_path, bold=True)
+                        yellow("Copying regular file :"),
+                        yellow(full_local_path, bold=True),
                     )
 
                 copy_or_link(full_file_path, full_local_path)
@@ -487,8 +491,7 @@ def process_folder(
         print(red("Conflict resolved HBS:"), red(full_local_path, bold=True))
 
 
-def copy_or_link(source: str,
-                 target: str) -> None:
+def copy_or_link(source: str, target: str) -> None:
     if os.path.islink(source):
         # if the source is a link, we need to create a link pointing
         # to a relative path that matches.

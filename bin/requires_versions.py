@@ -16,4 +16,4 @@ if len(install_requires) == 1:
     print(install_requires[0])
     sys.exit(0)
 
-print("\n        " + ",\n        ".join(install_requires))
+print("\n        " + ",\n        ".join(install_requires) + ",\n    ")
