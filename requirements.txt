@@ -1,1 +1,1 @@
-_gbs/prepare-build1/requirements.txt
+_gbs/prepare-build2/requirements.txt

@@ -4,4 +4,3 @@ colorama >= 0.4.3
 mdvl >=2017.7.16.7
 PyYAML == 5.1.2
 click >= 7.0, <8.0
-
