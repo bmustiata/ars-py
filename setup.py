@@ -20,7 +20,7 @@ setup(
         "termcolor_util >= 1.2.0, <2.0",
         "colorama >= 0.4.3",
         "mdvl >=2017.7.16.7",
-        "PyYAML == 5.3.1",
+        "PyYAML == 5.4",
         "click >= 7.0, <8.0",
     ],
     packages=packages,
